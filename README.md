@@ -38,11 +38,11 @@ const CatAPI = FastifyMongooseRest(Cat);
 const server = fastify({});
 
 // Setup routes
-server.post('/cat', CatAPI.create());
-server.get('/cat/:id', CatAPI.findOne());
-server.patch('/cat/:id', CatAPI.update());
-server.delete('/cat/:id', CatAPI.remove());
-server.post('/cat/search', CatAPI.search());
+server.post('/cats', CatAPI.create());
+server.get('/cats/:id', CatAPI.findOne());
+server.patch('/cats/:id', CatAPI.update());
+server.delete('/cats/:id', CatAPI.remove());
+server.post('/cats/search', CatAPI.search());
 
 async function startServer() {
   await server.listen(3000);
