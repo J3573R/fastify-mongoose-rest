@@ -39,6 +39,7 @@ const server = fastify({});
 
 // Setup routes
 server.post('/cats', CatAPI.create());
+server.get('/cats', CatAPI.find());
 server.get('/cats/:id', CatAPI.findOne());
 server.patch('/cats/:id', CatAPI.update());
 server.delete('/cats/:id', CatAPI.remove());
