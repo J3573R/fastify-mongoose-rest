@@ -1,10 +1,14 @@
 {
   "name": "fastify-mongoose-rest",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Rest API generator tools for fastify and mongoose",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/J3573R/fastify-mongoose-rest"
   },
   "keywords": [
     "fastify",
