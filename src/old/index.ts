@@ -3,7 +3,7 @@ const createRemoveHandler = require('./remove');
 const createSearchHandler = require('./search');
 const createUpdateHandler = require('./update');
 
-module.exports = {
+export default {
   createInsertHandler,
   createRemoveHandler,
   createSearchHandler,

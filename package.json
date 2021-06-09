@@ -20,11 +20,11 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^24.0.24",
-    "eslint": "^6.7.1",
-    "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-plugin-import": "^2.18.2",
-    "fastify": "^2.11.0",
+    "fastify": "^3.17.0",
     "jest": "^24.9.0",
-    "mongoose": "^5.8.1"
+    "mongoose": "^5.12.13"
+  },
+  "dependencies": {
+    "fastify-swagger": "^4.7.0"
   }
 }
