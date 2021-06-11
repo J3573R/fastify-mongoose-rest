@@ -60,6 +60,7 @@ export default function Modify(
       const resource = await model.findOneAndUpdate(
         { _id: request.params.id },
         { $set: request.body },
+        { new: true },
       );
       return reply.send(resource);
     },
