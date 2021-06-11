@@ -5,17 +5,30 @@ import {
   HTTPMethods,
 } from 'fastify';
 import { Model } from 'mongoose';
-import { parseInput } from './helpers';
+import { parseInput } from '../helpers';
 
 export default function Details(
   name: string,
   model: Model<any>,
+  schema?: object,
 ): {
   method: HTTPMethods;
   url: string;
   schema: FastifySchema;
   handler: any;
 } {
+  let response = {};
+  if (schema) {
+    response = {
+      200: {
+        type: 'object',
+        properties: {
+          ...schema,
+        },
+      },
+    };
+  }
+
   return {
     method: 'GET',
     url: `/${name}/:id`,
@@ -42,6 +55,7 @@ export default function Details(
           },
         },
       },
+      response,
     },
     handler: async (
       request: FastifyRequest<{
