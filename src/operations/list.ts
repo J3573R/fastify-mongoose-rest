@@ -1,39 +1,34 @@
-import {
-  FastifyReply,
-  FastifyRequest,
-  FastifySchema,
-  HTTPMethods,
-} from 'fastify';
+import { FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
 import { Model } from 'mongoose';
-import { parseInput } from '../helpers';
+import { FastifyMongooseRestOptions } from '..';
+import { createResponseSchema, parseInput } from '../helpers';
 
 export default function List(
   name: string,
   model: Model<any>,
-  schema?: object,
+  options?: FastifyMongooseRestOptions,
 ): {
   method: HTTPMethods;
   url: string;
-  schema: FastifySchema;
+  schema: {
+    summary: string;
+    tags: string[];
+    querystring: object;
+    response: object;
+  };
   handler: any;
 } {
   let response = {};
-  if (schema) {
-    response = {
-      200: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: schema,
-        },
-      },
-    };
+  if (options?.validationSchema) {
+    response = createResponseSchema(options.validationSchema, 'array');
   }
 
   return {
     method: 'GET',
     url: `/${name}`,
     schema: {
+      summary: `List ${name}s`,
+      tags: options?.tags || [],
       querystring: {
         type: 'object',
         properties: {
@@ -48,6 +43,10 @@ export default function List(
           projection: {
             type: 'string',
             description: 'Projection options of mongoose',
+          },
+          sort: {
+            type: 'string',
+            description: 'Sort options of mongoose',
           },
           page: {
             type: 'number',
@@ -67,13 +66,15 @@ export default function List(
           query?: string;
           populate?: string;
           projection?: string;
+          sort?: string;
           page?: number;
           pageSize?: number;
         };
       }>,
       reply: FastifyReply,
     ) => {
-      const { query, populate, projection, page, pageSize } = request.query;
+      const { query, populate, projection, sort, page, pageSize } =
+        request.query;
 
       let qs: object = {};
       if (query) {
@@ -88,6 +89,10 @@ export default function List(
 
       if (projection) {
         operation.projection(parseInput(projection));
+      }
+
+      if (sort) {
+        operation.sort(parseInput(sort));
       }
 
       if (page) {

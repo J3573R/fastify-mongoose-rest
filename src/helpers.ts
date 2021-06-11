@@ -9,3 +9,42 @@ export function parseInput(input: string) {
     return input;
   }
 }
+
+export function createResponseSchema(schema: object, type: 'object' | 'array') {
+  let successResponse;
+  if (type === 'object') {
+    successResponse = { type: 'object', properties: schema };
+  }
+  if (type === 'array') {
+    successResponse = {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: schema,
+      },
+    };
+  }
+
+  return {
+    200: {
+      description: 'Success',
+      ...successResponse,
+    },
+    400: {
+      description: 'Validation error',
+      type: 'object',
+      properties: {
+        error: { type: 'string' },
+        message: { type: 'string' },
+      },
+    },
+    500: {
+      description: 'Server error',
+      type: 'object',
+      properties: {
+        error: { type: 'string' },
+        message: { type: 'string' },
+      },
+    },
+  };
+}

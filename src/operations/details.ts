@@ -1,38 +1,35 @@
-import {
-  FastifyReply,
-  FastifyRequest,
-  FastifySchema,
-  HTTPMethods,
-} from 'fastify';
+import { FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
 import { Model } from 'mongoose';
-import { parseInput } from '../helpers';
+import { FastifyMongooseRestOptions } from '..';
+import { createResponseSchema, parseInput } from '../helpers';
 
 export default function Details(
   name: string,
   model: Model<any>,
-  schema?: object,
+  options?: FastifyMongooseRestOptions,
 ): {
   method: HTTPMethods;
   url: string;
-  schema: FastifySchema;
+  schema: {
+    summary: string;
+    tags: string[];
+    params: object;
+    querystring: object;
+    response: object;
+  };
   handler: any;
 } {
   let response = {};
-  if (schema) {
-    response = {
-      200: {
-        type: 'object',
-        properties: {
-          ...schema,
-        },
-      },
-    };
+  if (options?.validationSchema) {
+    response = createResponseSchema(options.validationSchema, 'object');
   }
 
   return {
     method: 'GET',
     url: `/${name}/:id`,
     schema: {
+      summary: `Get details of single ${name}`,
+      tags: options?.tags || [],
       params: {
         type: 'object',
         properties: {

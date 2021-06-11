@@ -1,46 +1,43 @@
-import {
-  FastifyReply,
-  FastifyRequest,
-  FastifySchema,
-  HTTPMethods,
-} from 'fastify';
+import { FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
 import { Model } from 'mongoose';
+import { FastifyMongooseRestOptions } from '..';
+import { createResponseSchema } from '../helpers';
 
 export default function Create(
   name: string,
   model: Model<any>,
-  schema?: object,
+  options?: FastifyMongooseRestOptions,
 ): {
   method: HTTPMethods;
   url: string;
-  schema: FastifySchema;
+  schema: {
+    summary: string;
+    tags: string[];
+    body: object;
+    response: object;
+  };
   handler: any;
 } {
   let response: any = {};
   let body: any = { type: 'object' };
 
-  if (schema) {
+  if (options?.validationSchema) {
     body = {
       type: 'object',
       properties: {
-        ...schema,
+        ...options.validationSchema,
       },
     };
     delete body.properties._id;
-    response = {
-      200: {
-        type: 'object',
-        properties: {
-          ...schema,
-        },
-      },
-    };
+    response = createResponseSchema(options.validationSchema, 'object');
   }
 
   return {
     method: 'POST',
     url: `/${name}`,
     schema: {
+      summary: `Create new ${name}`,
+      tags: options?.tags || [],
       body,
       response,
     },

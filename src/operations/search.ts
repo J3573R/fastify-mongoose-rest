@@ -1,50 +1,43 @@
-import {
-  FastifyReply,
-  FastifyRequest,
-  FastifySchema,
-  HTTPMethods,
-} from 'fastify';
+import { FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
 import { Model } from 'mongoose';
-import { parseInput } from '../helpers';
+import { FastifyMongooseRestOptions } from '..';
+import { createResponseSchema, parseInput } from '../helpers';
 
 export default function Search(
   name: string,
   model: Model<any>,
-  schema?: object,
+  options?: FastifyMongooseRestOptions,
 ): {
   method: HTTPMethods;
   url: string;
-  schema: FastifySchema;
+  schema: {
+    summary: string;
+    tags: string[];
+    body: object;
+    response: object;
+  };
   handler: any;
 } {
   let body: any = {};
   let response = {};
 
-  if (schema) {
+  if (options?.validationSchema) {
     body = {
       type: 'object',
       properties: {
-        ...schema,
+        ...options.validationSchema,
       },
     };
     delete body.properties._id;
-    response = {
-      200: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            ...schema,
-          },
-        },
-      },
-    };
+    response = createResponseSchema(options.validationSchema, 'array');
   }
 
   return {
     method: 'POST',
     url: `/${name}/search`,
     schema: {
+      summary: `Search ${name}s`,
+      tags: options?.tags || [],
       body: {
         type: 'object',
         properties: {
@@ -59,6 +52,10 @@ export default function Search(
           projection: {
             type: 'string',
             description: 'Projection options of mongoose',
+          },
+          sort: {
+            type: 'string',
+            description: 'Sort options of mongoose',
           },
           page: {
             type: 'number',
@@ -78,13 +75,15 @@ export default function Search(
           query?: object;
           populate?: string;
           projection?: string;
+          sort?: string;
           page?: number;
           pageSize?: number;
         };
       }>,
       reply: FastifyReply,
     ) => {
-      const { query, populate, projection, page, pageSize } = request.body;
+      const { query, populate, projection, sort, page, pageSize } =
+        request.body;
 
       const operation = model.find(query || {});
 
@@ -94,6 +93,10 @@ export default function Search(
 
       if (projection) {
         operation.projection(parseInput(projection));
+      }
+
+      if (sort) {
+        operation.sort(parseInput(sort));
       }
 
       if (page) {
