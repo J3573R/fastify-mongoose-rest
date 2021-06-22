@@ -19,7 +19,7 @@
     "url": "https://github.com/J3573R/fastify-mongoose-rest"
   },
   "files": [
-    "dist/**/*"
+    "build/**/*"
   ],
   "keywords": [
     "fastify",
