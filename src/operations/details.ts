@@ -17,7 +17,7 @@ export default function Details(
     querystring: object;
     response: object;
   };
-  handler: any;
+  handler: unknown;
 } {
   let response = {};
   if (options?.validationSchema) {

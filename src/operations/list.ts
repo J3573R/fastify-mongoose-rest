@@ -16,7 +16,7 @@ export default function List(
     querystring: object;
     response: object;
   };
-  handler: any;
+  handler: unknown;
 } {
   let response = {};
   if (options?.validationSchema) {

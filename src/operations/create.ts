@@ -16,7 +16,7 @@ export default function Create(
     body: object;
     response: object;
   };
-  handler: any;
+  handler: unknown;
 } {
   let response: Record<number, unknown> = {};
   let body: Record<string, any> = {type: 'object'};

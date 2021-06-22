@@ -16,7 +16,7 @@ export default function Search(
     body: object;
     response: object;
   };
-  handler: any;
+  handler: unknown;
 } {
   let body: any = {};
   let response = {};

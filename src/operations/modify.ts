@@ -17,7 +17,7 @@ export default function Modify(
     body: object;
     response: object;
   };
-  handler: any;
+  handler: unknown;
 } {
   let body: any = {type: 'object'};
   let response = {};

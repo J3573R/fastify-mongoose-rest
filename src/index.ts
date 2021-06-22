@@ -13,7 +13,7 @@ export interface FastifyMongooseRestOptions {
 
 export default function FastifyMongooseRest(
   name: string,
-  model: Model<any>,
+  model: Model<unknown>,
   options?: FastifyMongooseRestOptions
 ) {
   return {
