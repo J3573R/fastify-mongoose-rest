@@ -5,10 +5,8 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "test": "jest --coverage",
     "build": "tsc",
     "prepare": "npm run compile",
-    "prepublishOnly": "npm test",
     "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc",
