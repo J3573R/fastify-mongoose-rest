@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import {Model} from 'mongoose';
 
 import Details from './operations/details';
 import Create from './operations/create';
@@ -14,7 +14,7 @@ export interface FastifyMongooseRestOptions {
 export default function FastifyMongooseRest(
   name: string,
   model: Model<any>,
-  options?: FastifyMongooseRestOptions,
+  options?: FastifyMongooseRestOptions
 ) {
   return {
     create: Create(name, model, options),

@@ -1,12 +1,12 @@
-import { FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
-import { Model } from 'mongoose';
-import { FastifyMongooseRestOptions } from '..';
-import { createResponseSchema } from '../helpers';
+import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {Model} from 'mongoose';
+import {FastifyMongooseRestOptions} from '..';
+import {createResponseSchema} from '../helpers';
 
 export default function Create(
   name: string,
-  model: Model<any>,
-  options?: FastifyMongooseRestOptions,
+  model: Model<unknown>,
+  options?: FastifyMongooseRestOptions
 ): {
   method: HTTPMethods;
   url: string;
@@ -18,8 +18,8 @@ export default function Create(
   };
   handler: any;
 } {
-  let response: any = {};
-  let body: any = { type: 'object' };
+  let response: Record<number, unknown> = {};
+  let body: Record<string, any> = {type: 'object'};
 
   if (options?.validationSchema) {
     body = {
@@ -28,7 +28,9 @@ export default function Create(
         ...options.validationSchema,
       },
     };
+
     delete body.properties._id;
+
     response = createResponseSchema(options.validationSchema, 'object');
   }
 
@@ -45,7 +47,7 @@ export default function Create(
       request: FastifyRequest<{
         Body: unknown;
       }>,
-      reply: FastifyReply,
+      reply: FastifyReply
     ) => {
       const resource = await model.create(request.body);
       return reply.send(resource);

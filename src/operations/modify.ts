@@ -1,12 +1,12 @@
-import { FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
-import { Model } from 'mongoose';
-import { FastifyMongooseRestOptions } from '..';
-import { createResponseSchema } from '../helpers';
+import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {Model} from 'mongoose';
+import {FastifyMongooseRestOptions} from '..';
+import {createResponseSchema} from '../helpers';
 
 export default function Modify(
   name: string,
-  model: Model<any>,
-  options?: FastifyMongooseRestOptions,
+  model: Model<unknown>,
+  options?: FastifyMongooseRestOptions
 ): {
   method: HTTPMethods;
   url: string;
@@ -19,7 +19,7 @@ export default function Modify(
   };
   handler: any;
 } {
-  let body: any = { type: 'object' };
+  let body: any = {type: 'object'};
   let response = {};
 
   if (options?.validationSchema) {
@@ -42,7 +42,7 @@ export default function Modify(
       params: {
         type: 'object',
         properties: {
-          id: { type: 'string' },
+          id: {type: 'string'},
         },
       },
       body,
@@ -55,12 +55,12 @@ export default function Modify(
         };
         Body: object;
       }>,
-      reply: FastifyReply,
+      reply: FastifyReply
     ) => {
       const resource = await model.findOneAndUpdate(
-        { _id: request.params.id },
-        { $set: request.body },
-        { new: true },
+        {_id: request.params.id},
+        {$set: request.body},
+        {new: true}
       );
       return reply.send(resource);
     },

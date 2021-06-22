@@ -1,12 +1,12 @@
-import { FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
-import { Model } from 'mongoose';
-import { FastifyMongooseRestOptions } from '..';
-import { createResponseSchema, parseInput } from '../helpers';
+import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {Model} from 'mongoose';
+import {FastifyMongooseRestOptions} from '..';
+import {createResponseSchema, parseInput} from '../helpers';
 
 export default function Search(
   name: string,
-  model: Model<any>,
-  options?: FastifyMongooseRestOptions,
+  model: Model<unknown>,
+  options?: FastifyMongooseRestOptions
 ): {
   method: HTTPMethods;
   url: string;
@@ -80,10 +80,9 @@ export default function Search(
           pageSize?: number;
         };
       }>,
-      reply: FastifyReply,
+      reply: FastifyReply
     ) => {
-      const { query, populate, projection, sort, page, pageSize } =
-        request.body;
+      const {query, populate, projection, sort, page, pageSize} = request.body;
 
       const operation = model.find(query || {});
 

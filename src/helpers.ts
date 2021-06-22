@@ -3,17 +3,20 @@
  */
 export function parseInput(input: string) {
   try {
-    let result = JSON.parse(input);
+    const result = JSON.parse(input);
     return result;
   } catch (error) {
     return input;
   }
 }
 
-export function createResponseSchema(schema: object, type: 'object' | 'array') {
+export function createResponseSchema(
+  schema: object,
+  type: 'object' | 'array'
+): Record<number, unknown> {
   let successResponse;
   if (type === 'object') {
-    successResponse = { type: 'object', properties: schema };
+    successResponse = {type: 'object', properties: schema};
   }
   if (type === 'array') {
     successResponse = {
@@ -34,16 +37,16 @@ export function createResponseSchema(schema: object, type: 'object' | 'array') {
       description: 'Validation error',
       type: 'object',
       properties: {
-        error: { type: 'string' },
-        message: { type: 'string' },
+        error: {type: 'string'},
+        message: {type: 'string'},
       },
     },
     500: {
       description: 'Server error',
       type: 'object',
       properties: {
-        error: { type: 'string' },
-        message: { type: 'string' },
+        error: {type: 'string'},
+        message: {type: 'string'},
       },
     },
   };

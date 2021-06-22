@@ -1,12 +1,12 @@
-import { FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
-import { Model } from 'mongoose';
-import { FastifyMongooseRestOptions } from '..';
-import { createResponseSchema, parseInput } from '../helpers';
+import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {Model} from 'mongoose';
+import {FastifyMongooseRestOptions} from '..';
+import {createResponseSchema, parseInput} from '../helpers';
 
 export default function Details(
   name: string,
-  model: Model<any>,
-  options?: FastifyMongooseRestOptions,
+  model: Model<unknown>,
+  options?: FastifyMongooseRestOptions
 ): {
   method: HTTPMethods;
   url: string;
@@ -64,9 +64,9 @@ export default function Details(
           projection?: string;
         };
       }>,
-      reply: FastifyReply,
+      reply: FastifyReply
     ) => {
-      const { populate, projection } = request.query;
+      const {populate, projection} = request.query;
 
       const query = model.findById(request.params.id);
 

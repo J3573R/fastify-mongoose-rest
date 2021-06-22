@@ -1,12 +1,12 @@
-import { FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
-import { Model } from 'mongoose';
-import { FastifyMongooseRestOptions } from '..';
-import { createResponseSchema, parseInput } from '../helpers';
+import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {Model} from 'mongoose';
+import {FastifyMongooseRestOptions} from '..';
+import {createResponseSchema, parseInput} from '../helpers';
 
 export default function List(
   name: string,
-  model: Model<any>,
-  options?: FastifyMongooseRestOptions,
+  model: Model<unknown>,
+  options?: FastifyMongooseRestOptions
 ): {
   method: HTTPMethods;
   url: string;
@@ -71,10 +71,9 @@ export default function List(
           pageSize?: number;
         };
       }>,
-      reply: FastifyReply,
+      reply: FastifyReply
     ) => {
-      const { query, populate, projection, sort, page, pageSize } =
-        request.query;
+      const {query, populate, projection, sort, page, pageSize} = request.query;
 
       let qs: object = {};
       if (query) {
