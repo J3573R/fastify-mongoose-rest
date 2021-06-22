@@ -5,7 +5,7 @@ import {createResponseSchema} from '../helpers';
 
 export default function Create(
   name: string,
-  model: Model<unknown>,
+  model: Model<any>,
   options?: FastifyMongooseRestOptions
 ): {
   method: HTTPMethods;
@@ -16,9 +16,9 @@ export default function Create(
     body: object;
     response: object;
   };
-  handler: unknown;
+  handler: any;
 } {
-  let response: Record<number, unknown> = {};
+  let response: Record<number, any> = {};
   let body: Record<string, any> = {type: 'object'};
 
   if (options?.validationSchema) {

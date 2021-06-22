@@ -5,7 +5,7 @@ import {createResponseSchema, parseInput} from '../helpers';
 
 export default function List(
   name: string,
-  model: Model<unknown>,
+  model: Model<any>,
   options?: FastifyMongooseRestOptions
 ): {
   method: HTTPMethods;
@@ -16,7 +16,7 @@ export default function List(
     querystring: object;
     response: object;
   };
-  handler: unknown;
+  handler: any;
 } {
   let response = {};
   if (options?.validationSchema) {

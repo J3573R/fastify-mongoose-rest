@@ -5,7 +5,7 @@ import {createResponseSchema} from '../helpers';
 
 export default function Modify(
   name: string,
-  model: Model<unknown>,
+  model: Model<any>,
   options?: FastifyMongooseRestOptions
 ): {
   method: HTTPMethods;
@@ -17,7 +17,7 @@ export default function Modify(
     body: object;
     response: object;
   };
-  handler: unknown;
+  handler: any;
 } {
   let body: any = {type: 'object'};
   let response = {};
