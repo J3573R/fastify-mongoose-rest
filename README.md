@@ -1,176 +1,120 @@
 # Fastify-mongoose-rest
 
-Fastify mongoose rest generates simple route handlers & schemas for mongoose models. This package is inspired by [restify-mongoose](https://github.com/saintedlama/restify-mongoose) and supports partly same format to make migration easier.
+Package that generates fastify route objects from mongoose model. Supports validation schemas (ajv) & fastify-swagger. Validation schema is used also defining responses for fastify-swagger.
 
 ## Usage
-
-### Initialization
-
-Install fastify-mongoose-rest package:
 
 ```
 npm i -s fastify-mongoose-rest
 ```
 
-Setup your fastify server and mongoose:
+Basic example:
 
-```js
-const fastify = require('fastify');
-const Mongoose = require('mongoose');
-const FastifyMongooseRest = require('fastify-mongoose-rest');
+```ts
+import Fastify from 'fastify';
+import FastifySwagger from 'fastify-swagger';
+import FastifyMongooseRest from 'fastify-mongoose-rest';
+import Mongoose from 'mongoose';
 
-Mongoose.connect('mongodb://localhost:27017/fastify-mongoose-rest', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
+const schema = new Mongoose.Schema({
+  name: String,
+  age: Number,
+  owner: String,
 });
 
-const Cat = Mongoose.model('Cat', {
+const Cat = Mongoose.model('cat', testSchema);
+
+const validationSchema = {
   name: {
-    type: String,
-    required: true
+    type: 'string',
   },
-});
+  age: {
+    type: 'number',
+  },
+  owner: {
+    type: 'string',
+  },
+};
 
+async function run() {
+  const connection = await Mongoose.connect(
+    'mongodb://localhost/fastify-mongoose-rest'
+  );
+  const CatRoutes = FastifyMongooseRest('cats', testModel, validationSchema);
 
-// Initialize fastify mongoose rest
-const CatAPI = FastifyMongooseRest(Cat);
+  const fastify = Fastify({});
+  fastify.register(FastifySwagger, {exposeRoute: true});
 
-const server = fastify({});
+  Object.values(CatRoutes).map(r => fastify.route(r));
 
-// Setup routes
-server.post('/cats', CatAPI.create());
-server.get('/cats', CatAPI.find());
-server.get('/cats/:id', CatAPI.findOne());
-server.patch('/cats/:id', CatAPI.update());
-server.delete('/cats/:id', CatAPI.remove());
-server.post('/cats/search', CatAPI.search());
-
-async function startServer() {
-  await server.listen(3000);
-  console.log('Server started');
+  fastify.listen(3000);
 }
 
-startServer();
+run();
 ```
 
-## Query
-Find & Search routes allows to insert query trough query string or body, depending on method used. These queries support everything you can insert into mongoose query.
-Query works with keywords `query` and `q`.
+## Routes
 
-Example:
-```
-http://localhost:3000/cats?query={"name": "John"}
+Package generates 5 different route specifications:
 
-OR
+### Create
 
-http://localhost:3000/cats?q={"name": "John"}
-```
+`POST` endpoint for creating documents.
 
-## Pagination
-Find & Search routes allow to paginate results. Pagination is `OFF` by default.
+Generated url example: `POST https://localhost/cats`
 
-To use pagination, add limit and/or skip to your request:
-```
-PAGE 1
-http://localhost:3000/cats?limit=10&skip=0
+### Details
 
-PAGE 2
-http://localhost:3000/cats?limit=10&skip=1
+`GET` endpoint for getting single document from database.
+Takes parameters in `querystring` and supports `populate` and `projection` mongoose functionalities.
 
-etc...
-```
+Generated url example: `GET https://localhost/cats/:id`
 
-Pagination supports following terms:
+### List
 
-Limit can also be `pageSize`.
+`GET` endpoint for getting multiple documents.
+Takes parameters in `querystring` and supports `query`, `populate`, `projection`, `sort`, `page` and `pageSize` properties.
 
-Skip can be `page` or `p`.
+Generated url example: `GET https://localhost/cats`
 
-## Sort
+### Modify
 
-Find & Search supports sorting.
+`PATCH` endpoint for modifying single document.
 
-Sort property from query will be passed straight to mongoose sort method.
+Generated url example: `PATCH https://localhost/cats/:id`
 
-Example:
-```
-http://localhost:3000/cats?sort={"name": 1}
-http://localhost:3000/cats?sort=-name
-```
+### Search
 
-## Projection
-Projection can be passed in Find & Search in two ways: in queries or in function arguments.
+`POST` endpoint for getting multiple documents. Similar to `List` endpoint but takes inputs from `body`.
 
-For queries, it works like this:
+Generated url example: `POST https://localhost/cats/search`
 
-```
-htpp://localhost:3000/cats?projection={"name": 0}
-http://localhost:3000/cats?projection=-name
-```
+## Querying
 
-Projection in function arguments works as following:
+### Query
 
-```js
-let catProjection = function(request, item, cb) {
-  var cat = {
-    name: item.name,
-  };
-  return cb(null, user);
-};
+Query is expected to be stringified `object`. Object is parsed and passed to mongoose models query function without further filtering.
 
-server.get('/cats/name', CatAPI.find({ projection: catProjection }));
-```
+### Populate
 
-## Filter
-Filter can be used to force parameters into queries. This can be very helpful when
-url defines multiple scopes for data.
+Populate takes `string` or stringified `object` as input. Input is passed to mongoose populate functionality.
 
-Example:
-```js
-let catFilter = function(request, item, cb) {
-  return { breed: request.params.breed };
-};
+More information about populate: https://mongoosejs.com/docs/populate.html
 
-server.get('/cats/name', CatAPI.find({ filter: catFilter }));
+### Projection
 
-// http://localhost:3000/breeds/:breed/cats/:id
-```
+Projection takes `string` or stringified `object` as input. Input is passed to mongoose projection functionality.
 
-## Populate
-Results can be populated like any other mongoose result. Population accepts following
-syntax:
+More information about projection: https://mongoosejs.com/docs/api.html#query_Query-projection
 
-```
-http://localhost:3000/cats?populate=history
-```
+### Skip
 
-## Search function
+Skip takes `number` as input.
 
-Fastify mongoose rest has special function included: `Search`.
-This function behaves same way as `find` except it get parameters from body
-of the request. This is meant to be used when url parameters would make request
-too long.
+More information: https://mongoosejs.com/docs/api/query.html#query_Query-limit
 
-Example:
-```js
-var request = require("request");
+### Limit
 
-var options = {
-  method: 'POST',
-  url: 'http://localhost:3000/cats/search',
-  headers: {'content-type': 'application/json'},
-  body: {
-    populate: {path: 'cats'}, 
-    skip: 0, 
-    limit: 10, 
-    projection: '-_id'
-  },
-  json: true
-};
+Limit takes `number` as input.
 
-request(options, function (error, response, body) {
-  if (error) throw new Error(error);
-
-  console.log(body);
-});
-```
+More information: https://mongoosejs.com/docs/api/query.html#query_Query-skip
