@@ -48,11 +48,11 @@ export default function List(
             type: 'string',
             description: 'Sort options of mongoose',
           },
-          page: {
+          skip: {
             type: 'number',
             description: 'Mongoose skip property',
           },
-          pageSize: {
+          limit: {
             type: 'number',
             description: 'Mongoose limit property',
           },
@@ -67,13 +67,13 @@ export default function List(
           populate?: string;
           projection?: string;
           sort?: string;
-          page?: number;
-          pageSize?: number;
+          skip?: number;
+          limit?: number;
         };
       }>,
       reply: FastifyReply
     ) => {
-      const {query, populate, projection, sort, page, pageSize} = request.query;
+      const {query, populate, projection, sort, skip, limit} = request.query;
 
       let qs: object = {};
       if (query) {
@@ -94,12 +94,12 @@ export default function List(
         operation.sort(parseInput(sort));
       }
 
-      if (page) {
-        operation.skip(page);
+      if (skip) {
+        operation.skip(skip);
       }
 
-      if (pageSize) {
-        operation.limit(pageSize);
+      if (limit) {
+        operation.limit(limit);
       }
 
       const resource = await operation.exec();

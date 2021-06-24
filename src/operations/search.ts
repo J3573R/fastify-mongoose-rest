@@ -57,11 +57,11 @@ export default function Search(
             type: 'string',
             description: 'Sort options of mongoose',
           },
-          page: {
+          skip: {
             type: 'number',
             description: 'Mongoose skip property',
           },
-          pageSize: {
+          limit: {
             type: 'number',
             description: 'Mongoose limit property',
           },
@@ -76,13 +76,13 @@ export default function Search(
           populate?: string;
           projection?: string;
           sort?: string;
-          page?: number;
-          pageSize?: number;
+          skip?: number;
+          limit?: number;
         };
       }>,
       reply: FastifyReply
     ) => {
-      const {query, populate, projection, sort, page, pageSize} = request.body;
+      const {query, populate, projection, sort, skip, limit} = request.body;
 
       const operation = model.find(query || {});
 
@@ -98,12 +98,12 @@ export default function Search(
         operation.sort(parseInput(sort));
       }
 
-      if (page) {
-        operation.skip(page);
+      if (skip) {
+        operation.skip(skip);
       }
 
-      if (pageSize) {
-        operation.limit(pageSize);
+      if (limit) {
+        operation.limit(limit);
       }
 
       const resource = await operation.exec();

@@ -73,7 +73,7 @@ Generated url example: `GET https://localhost/cats/:id`
 ### List
 
 `GET` endpoint for getting multiple documents.
-Takes parameters in `querystring` and supports `query`, `populate`, `projection`, `sort`, `page` and `pageSize` properties.
+Takes parameters in `querystring` and supports `query`, `populate`, `projection`, `sort`, `skip` and `limit` properties.
 
 Generated url example: `GET https://localhost/cats`
 
