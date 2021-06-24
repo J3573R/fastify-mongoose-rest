@@ -27,7 +27,7 @@ export default function List(
     method: 'GET',
     url: `/${name}`,
     schema: {
-      summary: `List ${name}s`,
+      summary: `List ${name}`,
       tags: options?.tags || [],
       querystring: {
         type: 'object',

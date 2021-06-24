@@ -36,7 +36,7 @@ export default function Search(
     method: 'POST',
     url: `/${name}/search`,
     schema: {
-      summary: `Search ${name}s`,
+      summary: `Search ${name}`,
       tags: options?.tags || [],
       body: {
         type: 'object',
