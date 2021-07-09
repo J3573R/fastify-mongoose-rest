@@ -81,6 +81,7 @@ export default function List(
       }
 
       const operation = model.find(qs);
+      const operationCount = model.find(qs).count();
 
       if (populate) {
         operation.populate(parseInput(populate));
@@ -103,6 +104,7 @@ export default function List(
       }
 
       const resource = await operation.exec();
+      reply.header('X-Total-Count', operationCount);
       return reply.send(resource);
     },
   };

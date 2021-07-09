@@ -85,6 +85,7 @@ export default function Search(
       const {query, populate, projection, sort, skip, limit} = request.body;
 
       const operation = model.find(query || {});
+      const operationCount = model.find(query || {}).count();
 
       if (populate) {
         operation.populate(parseInput(populate));
@@ -107,6 +108,9 @@ export default function Search(
       }
 
       const resource = await operation.exec();
+
+      reply.header('X-Total-Count', operationCount);
+
       return reply.send(resource);
     },
   };
