@@ -81,7 +81,7 @@ export default function List(
       }
 
       const operation = model.find(qs);
-      const operationCount = model.find(qs).count();
+      const operationCount = await model.find(qs).count();
 
       if (populate) {
         operation.populate(parseInput(populate));
