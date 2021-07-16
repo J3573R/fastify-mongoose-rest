@@ -2,7 +2,7 @@ import fastify from 'fastify';
 import {MongoMemoryServer} from 'mongodb-memory-server';
 import Mongoose from 'mongoose';
 import supertest from 'supertest';
-import FastifyMongooseRest from '../../index';
+import FastifyMongooseRest from '../../src/index';
 import {
   CatModel,
   CatValidationSchema,
