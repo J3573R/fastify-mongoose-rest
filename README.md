@@ -75,6 +75,8 @@ Generated url example: `GET https://localhost/cats/:id`
 `GET` endpoint for getting multiple documents.
 Takes parameters in `querystring` and supports `query`, `populate`, `projection`, `sort`, `skip` and `limit` properties.
 
+Adds `x-total-count` header to indicate total count of the documents possible to be retrieve by changing skip & limit parameters.
+
 Generated url example: `GET https://localhost/cats`
 
 ### Modify
@@ -86,6 +88,8 @@ Generated url example: `PATCH https://localhost/cats/:id`
 ### Search
 
 `POST` endpoint for getting multiple documents. Similar to `List` endpoint but takes inputs from `body`.
+
+Adds `x-total-count` header to indicate total count of the documents possible to be retrieve by changing skip & limit parameters.
 
 Generated url example: `POST https://localhost/cats/search`
 
