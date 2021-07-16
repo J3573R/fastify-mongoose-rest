@@ -3,7 +3,7 @@ import faker from 'faker';
 import TestSetup from './util/setup';
 import {CatModel, PersonModel} from './util/models';
 
-describe('list', () => {
+describe('search', () => {
   const testSetup = new TestSetup();
   let request: SuperAgentTest;
 
@@ -21,9 +21,10 @@ describe('list', () => {
       await PersonModel.create({name: faker.name.findName()});
     }
     await request
-      .get('/persons')
+      .post('/persons/search')
       .expect(200)
       .expect('Content-Type', /json/)
+      .send({})
       .then(({body}) => {
         expect(Array.isArray(body)).toEqual(true);
         expect(body.length).toEqual(personCount);
@@ -34,10 +35,10 @@ describe('list', () => {
       await PersonModel.create({name: faker.name.findName()});
     }
     await request
-      .get('/persons')
+      .post('/persons/search')
       .expect(200)
       .expect('Content-Type', /json/)
-      .query({skip: 1, limit: 5})
+      .send({skip: 1, limit: 5})
       .then(({body}) => {
         expect(Array.isArray(body)).toEqual(true);
         expect(body.length).toEqual(2);
@@ -48,10 +49,10 @@ describe('list', () => {
     await PersonModel.create({name: 'qwe'});
 
     await request
-      .get('/persons')
+      .post('/persons/search')
       .expect(200)
       .expect('Content-Type', /json/)
-      .query({query: JSON.stringify({name: 'asd'})})
+      .send({query: {name: 'asd'}})
       .then(({body}) => {
         expect(Array.isArray(body)).toEqual(true);
         expect(body.length).toEqual(1);
@@ -70,10 +71,10 @@ describe('list', () => {
     }
     await PersonModel.create({name: 'asd', cats});
     await request
-      .get('/persons')
+      .post('/persons/search')
       .expect(200)
       .expect('Content-Type', /json/)
-      .query({populate: 'cats'})
+      .send({populate: 'cats'})
       .then(({body}) => {
         expect(Array.isArray(body)).toEqual(true);
         expect(body.length).toEqual(1);
@@ -88,10 +89,10 @@ describe('list', () => {
     await PersonModel.create({name: 'c'});
 
     await request
-      .get('/persons')
+      .post('/persons/search')
       .expect(200)
       .expect('Content-Type', /json/)
-      .query({sort: 'name'})
+      .send({sort: 'name'})
       .then(({body}) => {
         expect(Array.isArray(body)).toEqual(true);
         expect(body.length).toEqual(3);
@@ -100,10 +101,10 @@ describe('list', () => {
         expect(body[2].name).toEqual('c');
       });
     await request
-      .get('/persons')
+      .post('/persons/search')
       .expect(200)
       .expect('Content-Type', /json/)
-      .query({sort: '-name'})
+      .send({sort: '-name'})
       .then(({body}) => {
         expect(Array.isArray(body)).toEqual(true);
         expect(body.length).toEqual(3);
@@ -118,10 +119,10 @@ describe('list', () => {
       await PersonModel.create({name: faker.name.findName()});
     }
     await request
-      .get('/persons')
+      .post('/persons/search')
       .expect(200)
       .expect('Content-Type', /json/)
-      .query({skip: 0, limit: 5})
+      .send({skip: 0, limit: 5})
       .then(({body, header}) => {
         expect(Array.isArray(body)).toEqual(true);
         expect(body.length).toEqual(5);
@@ -132,10 +133,10 @@ describe('list', () => {
   it('should return only properties defined in projection', async () => {
     await PersonModel.create({name: faker.name.findName()});
     await request
-      .get('/persons')
+      .post('/persons/search')
       .expect(200)
       .expect('Content-Type', /json/)
-      .query({
+      .send({
         projection: 'name -_id',
       })
       .then(({body}) => {

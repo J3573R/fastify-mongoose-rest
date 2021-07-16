@@ -85,7 +85,7 @@ export default function Search(
       const {query, populate, projection, sort, skip, limit} = request.body;
 
       const operation = model.find(query || {});
-      const operationCount = model.find(query || {}).count();
+      const operationCount = await model.find(query || {}).countDocuments();
 
       if (populate) {
         operation.populate(parseInput(populate));
