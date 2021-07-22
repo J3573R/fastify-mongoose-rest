@@ -1,7 +1,7 @@
 import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
 import {Model} from 'mongoose';
 import {FastifyMongooseRestOptions} from '..';
-import {createResponseSchema} from '../helpers';
+import {createResponseSchema, updatePropertiesRecursive} from '../helpers';
 
 export default function Modify(
   name: string,
@@ -53,15 +53,14 @@ export default function Modify(
         Params: {
           id: string;
         };
-        Body: object;
+        Body: {[index: string]: any};
       }>,
       reply: FastifyReply
     ) => {
-      const resource = await model.findOneAndUpdate(
-        {_id: request.params.id},
-        {$set: request.body},
-        {new: true}
-      );
+      let resource = await model.findById(request.params.id).lean();
+      resource = updatePropertiesRecursive(resource, request.body);
+      await model.updateOne({_id: request.params.id}, {$set: resource});
+
       return reply.send(resource);
     },
   };

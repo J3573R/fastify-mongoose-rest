@@ -51,3 +51,24 @@ export function createResponseSchema(
     },
   };
 }
+
+/**
+ * Update properties of object recursively.
+ */
+export function updatePropertiesRecursive(
+  obj: Record<string, any>,
+  changes: Record<string, any>
+) {
+  Object.keys(changes).map(key => {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      if (typeof obj[key] === 'object' && typeof changes[key] === 'object') {
+        if (changes[key] !== null) {
+          obj[key] = updatePropertiesRecursive(obj[key], changes[key]);
+        }
+      } else {
+        obj[key] = changes[key];
+      }
+    }
+  });
+  return obj;
+}

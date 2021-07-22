@@ -23,4 +23,32 @@ describe('Modify', () => {
         expect(res.body.name).toEqual('qwe');
       });
   });
+
+  it('should be able to modify only one subdocument property', async () => {
+    const person = await PersonModel.create({
+      name: 'asd',
+      address: {
+        street: 'Keskuojankatu',
+        city: 'Tampere',
+      },
+    });
+    const changes = {
+      name: 'qwe',
+      address: {
+        street: 'Jasperintie',
+      },
+    };
+    return request
+      .patch(`/persons/${person._id}`)
+      .expect(200)
+      .send(changes)
+      .then(async ({body}) => {
+        expect(body.name).toEqual('qwe');
+        expect(body.address.city).toEqual('Tampere');
+        expect(body.address.street).toEqual('Jasperintie');
+
+        const updatedPerson = await PersonModel.findById(person._id);
+        expect(updatedPerson).toMatchObject(changes);
+      });
+  });
 });
