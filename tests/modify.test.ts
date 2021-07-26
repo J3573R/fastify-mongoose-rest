@@ -51,4 +51,19 @@ describe('Modify', () => {
         expect(updatedPerson).toMatchObject(changes);
       });
   });
+
+  it('should be able to add non-existing properties if in schema', async () => {
+    const person = await PersonModel.create({
+      name: 'asd',
+    });
+    return request
+      .patch(`/persons/${person._id}`)
+      .expect(200)
+      .send({motto: 'Hello World'})
+      .then(async ({body}) => {
+        expect(body.motto).toEqual('Hello World');
+        const updatedPerson = await PersonModel.findById(person._id);
+        expect(updatedPerson).toHaveProperty('motto', 'Hello World');
+      });
+  });
 });

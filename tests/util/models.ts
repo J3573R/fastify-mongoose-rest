@@ -2,6 +2,7 @@ import Mongoose from 'mongoose';
 
 interface Person {
   name: string;
+  motto: string;
   address: {
     street: string;
     city: string;
@@ -16,6 +17,7 @@ interface Cat {
 
 const personSchema = new Mongoose.Schema<Person>({
   name: {type: String, required: true},
+  motto: {type: String},
   address: {
     street: {type: String},
     city: {type: String},
@@ -38,6 +40,7 @@ const CatModel = Mongoose.model<Cat>('Cat', catSchema);
 
 const PersonValidationSchema = {
   _id: {type: 'string'},
+  motto: {type: 'string'},
   address: {
     type: 'object',
     properties: {
