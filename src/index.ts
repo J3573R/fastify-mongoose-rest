@@ -5,6 +5,7 @@ import Create from './operations/create';
 import Modify from './operations/modify';
 import List from './operations/list';
 import Search from './operations/search';
+import Delete from './operations/delete';
 
 export interface FastifyMongooseRestOptions {
   validationSchema?: object;
@@ -18,6 +19,7 @@ export default function FastifyMongooseRest(
 ) {
   return {
     create: Create(name, model, options),
+    delete: Delete(name, model),
     details: Details(name, model, options),
     modify: Modify(name, model, options),
     list: List(name, model, options),
