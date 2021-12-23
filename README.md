@@ -67,7 +67,7 @@ Generated url example: `POST https://localhost/cats`
 
 `DELETE` endpoint for removing documents.
 
-Generalted url example: `DELETE https://localhost/cats/:id`
+Generated url example: `DELETE https://localhost/cats/:id`
 
 ### Details
 
