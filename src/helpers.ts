@@ -70,3 +70,16 @@ export function updatePropertiesRecursive(
   });
   return obj;
 }
+
+export function calculateSkipAndLimit(
+  p?: number,
+  page?: number,
+  pageSize?: number
+) {
+  const inputPage = p ? p : page ? page : undefined;
+  const requestedPage = Number(inputPage) >= 0 ? Number(inputPage) : 0;
+  const requestedPageSize = Number(pageSize) > 0 ? Number(pageSize) : 100;
+  const skip = requestedPageSize * requestedPage;
+  const limit = requestedPageSize + 1;
+  return {skip, limit};
+}

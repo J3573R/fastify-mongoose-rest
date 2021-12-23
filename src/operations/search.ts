@@ -1,7 +1,11 @@
 import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
 import {Model} from 'mongoose';
 import {FastifyMongooseRestOptions} from '..';
-import {createResponseSchema, parseInput} from '../helpers';
+import {
+  calculateSkipAndLimit,
+  createResponseSchema,
+  parseInput,
+} from '../helpers';
 
 export default function Search(
   name: string,
@@ -57,6 +61,10 @@ export default function Search(
             type: 'string',
             description: 'Sort options of mongoose',
           },
+          select: {
+            type: 'string',
+            description: 'Select options of mongoose',
+          },
           skip: {
             type: 'number',
             description: 'Mongoose skip property',
@@ -64,6 +72,14 @@ export default function Search(
           limit: {
             type: 'number',
             description: 'Mongoose limit property',
+          },
+          p: {
+            type: 'number',
+            description: 'Pagenumber property',
+          },
+          pageSize: {
+            type: 'number',
+            description: 'PageSize property',
           },
         },
       },
@@ -76,13 +92,28 @@ export default function Search(
           populate?: string;
           projection?: string;
           sort?: string;
+          select?: string;
           skip?: number;
           limit?: number;
+          p?: number;
+          page?: number;
+          pageSize?: number;
         };
       }>,
       reply: FastifyReply
     ) => {
-      const {query, populate, projection, sort, skip, limit} = request.body;
+      const {
+        query,
+        populate,
+        projection,
+        sort,
+        select,
+        skip,
+        limit,
+        p,
+        page,
+        pageSize,
+      } = request.body;
 
       const operation = model.find(query || {});
       const operationCount = await model.find(query || {}).countDocuments();
@@ -99,11 +130,21 @@ export default function Search(
         operation.sort(parseInput(sort));
       }
 
+      if (select) {
+        operation.select(parseInput(select));
+      }
+
       if (skip) {
         operation.skip(skip);
       }
 
       if (limit) {
+        operation.limit(limit);
+      }
+
+      if (p || page || pageSize) {
+        const {skip, limit} = calculateSkipAndLimit(p, page, pageSize);
+        operation.skip(skip);
         operation.limit(limit);
       }
 
