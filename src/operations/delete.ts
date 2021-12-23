@@ -1,6 +1,5 @@
 import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
 import {Model} from 'mongoose';
-import {createResponseSchema} from '../helpers';
 
 export default function Delete(
   name: string,
@@ -14,11 +13,25 @@ export default function Delete(
   handler: any;
 } {
   let response: Record<number, any> = {};
-
-  response = createResponseSchema({}, 'object');
   response = {
-    ...response,
+    200: {
+      description: 'Success',
+      type: 'object',
+      properties: {
+        acknowledged: {type: 'boolean'},
+        deletedCount: {type: 'number'},
+      },
+    },
     404: {
+      description: 'Not found',
+      type: 'object',
+      properties: {
+        error: {type: 'string'},
+        message: {type: 'string'},
+      },
+    },
+    500: {
+      description: 'Server error',
       type: 'object',
       properties: {
         error: {type: 'string'},
