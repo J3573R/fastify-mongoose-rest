@@ -87,7 +87,6 @@ export default function List(
           skip?: number;
           limit?: number;
           p?: number;
-          page?: number;
           pageSize?: number;
         };
       }>,
@@ -102,7 +101,6 @@ export default function List(
         skip,
         limit,
         p,
-        page,
         pageSize,
       } = request.query;
 
@@ -138,8 +136,8 @@ export default function List(
         operation.limit(limit);
       }
 
-      if (p || page || pageSize) {
-        const {skip, limit} = calculateSkipAndLimit(p, page, pageSize);
+      if (p || pageSize) {
+        const {skip, limit} = calculateSkipAndLimit(p, pageSize);
         operation.skip(skip);
         operation.limit(limit);
       }

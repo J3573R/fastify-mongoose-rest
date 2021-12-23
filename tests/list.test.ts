@@ -209,26 +209,6 @@ describe('list', () => {
       .get('/persons')
       .expect(200)
       .expect('Content-Type', /json/)
-      .query({page: 0, pageSize: 5})
-      .then(({body, header}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(6);
-        expect(header['x-total-count']).toEqual('10');
-      });
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({page: 1, pageSize: 5})
-      .then(({body, header}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(5);
-        expect(header['x-total-count']).toEqual('10');
-      });
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
       .query({pageSize: 5})
       .then(({body, header}) => {
         expect(Array.isArray(body)).toEqual(true);

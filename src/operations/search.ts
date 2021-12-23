@@ -96,7 +96,6 @@ export default function Search(
           skip?: number;
           limit?: number;
           p?: number;
-          page?: number;
           pageSize?: number;
         };
       }>,
@@ -111,7 +110,6 @@ export default function Search(
         skip,
         limit,
         p,
-        page,
         pageSize,
       } = request.body;
 
@@ -142,8 +140,8 @@ export default function Search(
         operation.limit(limit);
       }
 
-      if (p || page || pageSize) {
-        const {skip, limit} = calculateSkipAndLimit(p, page, pageSize);
+      if (p || pageSize) {
+        const {skip, limit} = calculateSkipAndLimit(p, pageSize);
         operation.skip(skip);
         operation.limit(limit);
       }
