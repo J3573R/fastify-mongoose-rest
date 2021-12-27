@@ -70,3 +70,16 @@ export function updatePropertiesRecursive(
   });
   return obj;
 }
+
+/**
+ * Calculate skip and limit options from given page and
+ * pageSize. If value is not given, use default values:
+ * 0 for page and 100 for pageSize
+ */
+export function calculateSkipAndLimit(p?: number, pageSize?: number) {
+  const requestedPage = p && p >= 0 ? p : 0;
+  const requestedPageSize = pageSize && pageSize > 0 ? pageSize : 100;
+  const skip = requestedPageSize * requestedPage;
+  const limit = requestedPageSize + 1;
+  return {skip, limit};
+}

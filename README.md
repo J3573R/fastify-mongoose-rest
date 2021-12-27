@@ -63,6 +63,12 @@ Package generates 5 different route specifications:
 
 Generated url example: `POST https://localhost/cats`
 
+### Delete
+
+`DELETE` endpoint for removing documents.
+
+Generated url example: `DELETE https://localhost/cats/:id`
+
 ### Details
 
 `GET` endpoint for getting single document from database.
@@ -73,7 +79,7 @@ Generated url example: `GET https://localhost/cats/:id`
 ### List
 
 `GET` endpoint for getting multiple documents.
-Takes parameters in `querystring` and supports `query`, `populate`, `projection`, `sort`, `skip` and `limit` properties.
+Takes parameters in `querystring` and supports `query`, `populate`, `projection`, `sort`, `skip`, `limit`, `p` and `pageSize` properties.
 
 Adds `x-total-count` header to indicate total count of the documents possible to be retrieve by changing skip & limit parameters.
 
@@ -111,6 +117,12 @@ Projection takes `string` or stringified `object` as input. Input is passed to m
 
 More information about projection: https://mongoosejs.com/docs/api.html#query_Query-projection
 
+### Select
+
+Select takes `string` or stringified `object` as input. Input is passed to mongoose select functionality.
+
+More information about select: https://mongoosejs.com/docs/api.html#query_Query-select
+
 ### Skip
 
 Skip takes `number` as input.
@@ -122,3 +134,11 @@ More information: https://mongoosejs.com/docs/api/query.html#query_Query-limit
 Limit takes `number` as input.
 
 More information: https://mongoosejs.com/docs/api/query.html#query_Query-skip
+
+### P
+
+P (page) takes `number` as input and is used to calculate value for skip.
+
+### PageSize
+
+PageSize takes `number` as input and is used as limit and to calculate value for skip.

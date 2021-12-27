@@ -146,4 +146,85 @@ describe('search', () => {
         expect(body[0]).not.toHaveProperty('_id');
       });
   });
+
+  it('should select what is returned in documents', async () => {
+    await PersonModel.create({name: 'a', motto: faker.lorem.sentence()});
+    await PersonModel.create({name: 'b', motto: faker.lorem.sentence()});
+    await PersonModel.create({name: 'c', motto: faker.lorem.sentence()});
+
+    await request
+      .post('/persons/search')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .send({select: 'name'})
+      .then(({body}) => {
+        expect(Array.isArray(body)).toEqual(true);
+        expect(body.length).toEqual(3);
+        expect(body[0].name).toEqual('a');
+        expect(body[0].motto).toBeUndefined();
+        expect(body[1].name).toEqual('b');
+        expect(body[1].motto).toBeUndefined();
+        expect(body[2].name).toEqual('c');
+        expect(body[2].motto).toBeUndefined();
+      });
+    await request
+      .post('/persons/search')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .send({select: 'motto'})
+      .then(({body}) => {
+        expect(body[0].name).toBeUndefined();
+        expect(body[0].motto).toBeTruthy();
+        expect(body[1].name).toBeUndefined();
+        expect(body[1].motto).toBeTruthy();
+        expect(body[2].name).toBeUndefined();
+        expect(body[2].motto).toBeTruthy();
+      });
+  });
+
+  it('should return amount of documents defined in page and pageSize', async () => {
+    for (let i = 0; i < 10; i++) {
+      await PersonModel.create({name: faker.name.findName()});
+    }
+    await request
+      .post('/persons/search')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .send({p: 0, pageSize: 5})
+      .then(({body, header}) => {
+        expect(Array.isArray(body)).toEqual(true);
+        expect(body.length).toEqual(6);
+        expect(header['x-total-count']).toEqual('10');
+      });
+    await request
+      .post('/persons/search')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .send({p: 1, pageSize: 5})
+      .then(({body, header}) => {
+        expect(Array.isArray(body)).toEqual(true);
+        expect(body.length).toEqual(5);
+        expect(header['x-total-count']).toEqual('10');
+      });
+    await request
+      .get('/persons')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .query({pageSize: 5})
+      .then(({body, header}) => {
+        expect(Array.isArray(body)).toEqual(true);
+        expect(body.length).toEqual(6);
+        expect(header['x-total-count']).toEqual('10');
+      });
+    await request
+      .get('/persons')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .query({p: 0})
+      .then(({body, header}) => {
+        expect(Array.isArray(body)).toEqual(true);
+        expect(body.length).toEqual(10);
+        expect(header['x-total-count']).toEqual('10');
+      });
+  });
 });
