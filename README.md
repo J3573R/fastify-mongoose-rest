@@ -72,7 +72,7 @@ Generated url example: `DELETE https://localhost/cats/:id`
 ### Details
 
 `GET` endpoint for getting single document from database.
-Takes parameters in `querystring` and supports `populate` and `projection` mongoose functionalities.
+Takes parameters in `querystring` and supports `select`, `populate` and `projection` mongoose functionalities.
 
 Generated url example: `GET https://localhost/cats/:id`
 

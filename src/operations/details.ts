@@ -50,6 +50,10 @@ export default function Details(
             type: 'string',
             description: 'Projection options of mongoose',
           },
+          select: {
+            type: 'string',
+            description: 'Select options of mongoose',
+          },
         },
       },
       response,
@@ -62,11 +66,12 @@ export default function Details(
         Querystring: {
           populate?: string;
           projection?: string;
+          select?: string;
         };
       }>,
       reply: FastifyReply
     ) => {
-      const {populate, projection} = request.query;
+      const {populate, projection, select} = request.query;
 
       const query = model.findById(request.params.id);
 
@@ -76,6 +81,10 @@ export default function Details(
 
       if (projection) {
         query.projection(parseInput(projection));
+      }
+
+      if (select) {
+        query.select(parseInput(select));
       }
 
       const resource = await query.exec();
