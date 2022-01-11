@@ -63,4 +63,19 @@ describe('details', () => {
         expect(body).not.toHaveProperty('_id');
       });
   });
+
+  it('should return only properties defined in select', async () => {
+    const person = await PersonModel.create({name: faker.name.findName()});
+    await request
+      .get(`/persons/${person._id}`)
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .query({
+        select: 'name -_id',
+      })
+      .then(({body}) => {
+        expect(body).toHaveProperty('name');
+        expect(body).not.toHaveProperty('_id');
+      });
+  });
 });
