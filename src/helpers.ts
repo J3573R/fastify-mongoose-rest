@@ -1,12 +1,14 @@
 /**
- * Try safely to parse input to object. Return string if not possible.
+ * Try safely to parse input to object.
+ * Return string (w/o commas) if not possible.
  */
 export function parseInput(input: string) {
   try {
     const result = JSON.parse(input);
     return result;
   } catch (error) {
-    return input;
+    const result = input.replace(/,/g, ' ');
+    return result;
   }
 }
 
