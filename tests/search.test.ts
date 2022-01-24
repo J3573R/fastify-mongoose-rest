@@ -147,6 +147,23 @@ describe('search', () => {
       });
   });
 
+  it('should parse comma separated parameters defined in projection', async () => {
+    await PersonModel.create({name: faker.name.findName()});
+    await request
+      .post('/persons/search')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .send({
+        projection: 'name,-_id',
+      })
+      .then(({body}) => {
+        expect(Array.isArray(body)).toEqual(true);
+        expect(body.length).toEqual(1);
+        expect(body[0]).toHaveProperty('name');
+        expect(body[0]).not.toHaveProperty('_id');
+      });
+  });
+
   it('should select what is returned in documents', async () => {
     await PersonModel.create({name: 'a', motto: faker.lorem.sentence()});
     await PersonModel.create({name: 'b', motto: faker.lorem.sentence()});
@@ -179,6 +196,42 @@ describe('search', () => {
         expect(body[1].motto).toBeTruthy();
         expect(body[2].name).toBeUndefined();
         expect(body[2].motto).toBeTruthy();
+      });
+  });
+  it('should parse comma separated parameters defined in select', async () => {
+    await PersonModel.create({
+      name: 'a',
+      motto: faker.lorem.sentence(),
+      address: {
+        street: 'Keskuojankatu',
+        city: 'Tampere',
+      },
+    });
+    await PersonModel.create({
+      name: 'b',
+      motto: faker.lorem.sentence(),
+      address: {
+        street: 'Mannerheimintie',
+        city: 'Helsinki',
+      },
+    });
+
+    await request
+      .post('/persons/search')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .send({select: 'name, motto, address.street'})
+      .then(({body}) => {
+        expect(Array.isArray(body)).toEqual(true);
+        expect(body.length).toEqual(2);
+        expect(body[0].name).toEqual('a');
+        expect(body[0].motto).toBeTruthy();
+        expect(body[0].address.street).toEqual('Keskuojankatu');
+        expect(body[0].address.city).toBeUndefined();
+        expect(body[1].name).toEqual('b');
+        expect(body[1].motto).toBeTruthy();
+        expect(body[1].address.street).toEqual('Mannerheimintie');
+        expect(body[1].address.city).toBeUndefined();
       });
   });
 
