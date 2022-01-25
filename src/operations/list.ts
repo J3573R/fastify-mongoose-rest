@@ -40,6 +40,10 @@ export default function List(
             type: 'string',
             description: 'Mongoose find query',
           },
+          q: {
+            type: 'string',
+            description: 'Mongoose find query',
+          },
           populate: {
             type: 'string',
             description: 'Population options of mongoose',
@@ -80,6 +84,7 @@ export default function List(
       request: FastifyRequest<{
         Querystring: {
           query?: string;
+          q?: string;
           populate?: string;
           projection?: string;
           sort?: string;
@@ -94,6 +99,7 @@ export default function List(
     ) => {
       const {
         query,
+        q,
         populate,
         projection,
         sort,
@@ -107,6 +113,8 @@ export default function List(
       let qs: object = {};
       if (query) {
         qs = JSON.parse(query);
+      } else if (q) {
+        qs = JSON.parse(q);
       }
 
       const operation = model.find(qs);

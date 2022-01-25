@@ -79,7 +79,7 @@ Generated url example: `GET https://localhost/cats/:id`
 ### List
 
 `GET` endpoint for getting multiple documents.
-Takes parameters in `querystring` and supports `query`, `populate`, `projection`, `sort`, `skip`, `limit`, `p` and `pageSize` properties.
+Takes parameters in `querystring` and supports `query`|`q`, `populate`, `projection`, `sort`, `skip`, `limit`, `p` and `pageSize` properties.
 
 Adds `x-total-count` header to indicate total count of the documents possible to be retrieve by changing skip & limit parameters.
 

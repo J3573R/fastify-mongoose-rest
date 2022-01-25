@@ -44,7 +44,7 @@ describe('search', () => {
         expect(body.length).toEqual(2);
       });
   });
-  it('should return specific list of documents with filter', async () => {
+  it('should return specific list of documents with "query" filter', async () => {
     const person = await PersonModel.create({name: 'asd'});
     await PersonModel.create({name: 'qwe'});
 
@@ -59,6 +59,23 @@ describe('search', () => {
         expect(body[0].name).toEqual(person.name);
       });
   });
+
+  it('should return specific list of documents with "q" filter', async () => {
+    const person = await PersonModel.create({name: 'asd'});
+    await PersonModel.create({name: 'qwe'});
+
+    await request
+      .post('/persons/search')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .send({q: {name: 'asd'}})
+      .then(({body}) => {
+        expect(Array.isArray(body)).toEqual(true);
+        expect(body.length).toEqual(1);
+        expect(body[0].name).toEqual(person.name);
+      });
+  });
+
   it('should populate information to returned documents', async () => {
     const catCount = faker.datatype.number({min: 1, max: 10});
     const cats = [];

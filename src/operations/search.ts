@@ -49,6 +49,10 @@ export default function Search(
             type: 'object',
             description: 'Mongoose find query',
           },
+          q: {
+            type: 'object',
+            description: 'Mongoose find query',
+          },
           populate: {
             type: 'string',
             description: 'Population options of mongoose',
@@ -89,6 +93,7 @@ export default function Search(
       request: FastifyRequest<{
         Body: {
           query?: object;
+          q?: object;
           populate?: string;
           projection?: string;
           sort?: string;
@@ -103,6 +108,7 @@ export default function Search(
     ) => {
       const {
         query,
+        q,
         populate,
         projection,
         sort,
@@ -113,8 +119,10 @@ export default function Search(
         pageSize,
       } = request.body;
 
-      const operation = model.find(query || {});
-      const operationCount = await model.find(query || {}).countDocuments();
+      const operation = model.find(query || q || {});
+      const operationCount = await model
+        .find(query || q || {})
+        .countDocuments();
 
       if (populate) {
         operation.populate(parseInput(populate));
