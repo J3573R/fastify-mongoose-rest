@@ -29,6 +29,7 @@ describe('list', () => {
         expect(body.length).toEqual(personCount);
       });
   });
+
   it('should return list of documents with skip and limit', async () => {
     for (let i = 0; i <= 2; i++) {
       await PersonModel.create({name: faker.name.findName()});
@@ -43,7 +44,8 @@ describe('list', () => {
         expect(body.length).toEqual(2);
       });
   });
-  it('should return specific list of documents with filter', async () => {
+
+  it('should return specific list of documents with "query" filter', async () => {
     const person = await PersonModel.create({name: 'asd'});
     await PersonModel.create({name: 'qwe'});
 
@@ -58,6 +60,23 @@ describe('list', () => {
         expect(body[0].name).toEqual(person.name);
       });
   });
+
+  it('should return specific list of documents with "q" filter', async () => {
+    const person = await PersonModel.create({name: 'asd'});
+    await PersonModel.create({name: 'qwe'});
+
+    await request
+      .get('/persons')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .query({q: JSON.stringify({name: 'asd'})})
+      .then(({body}) => {
+        expect(Array.isArray(body)).toEqual(true);
+        expect(body.length).toEqual(1);
+        expect(body[0].name).toEqual(person.name);
+      });
+  });
+
   it('should populate information to returned documents', async () => {
     const catCount = faker.datatype.number({min: 1, max: 10});
     const cats = [];
