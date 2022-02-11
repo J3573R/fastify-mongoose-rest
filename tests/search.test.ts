@@ -263,7 +263,7 @@ describe('search', () => {
       .send({p: 0, pageSize: 5})
       .then(({body, header}) => {
         expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(6);
+        expect(body.length).toEqual(5);
         expect(header['x-total-count']).toEqual('10');
       });
     await request
@@ -283,7 +283,7 @@ describe('search', () => {
       .query({pageSize: 5})
       .then(({body, header}) => {
         expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(6);
+        expect(body.length).toEqual(5);
         expect(header['x-total-count']).toEqual('10');
       });
     await request
