@@ -1,6 +1,6 @@
 {
   "name": "fastify-mongoose-rest",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "Rest API generator tools for fastify and mongoose",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
