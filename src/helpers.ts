@@ -82,6 +82,6 @@ export function calculateSkipAndLimit(p?: number, pageSize?: number) {
   const requestedPage = p && p >= 0 ? p : 0;
   const requestedPageSize = pageSize && pageSize > 0 ? pageSize : 100;
   const skip = requestedPageSize * requestedPage;
-  const limit = requestedPageSize + 1;
+  const limit = requestedPageSize;
   return {skip, limit};
 }
