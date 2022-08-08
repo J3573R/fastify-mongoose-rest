@@ -8,7 +8,13 @@ import Search from './operations/search';
 import Delete from './operations/delete';
 
 export interface FastifyMongooseRestOptions {
+  /**
+   * Faster / Ajv validation schema
+   */
   validationSchema?: object;
+  /**
+   * Swagger tags for schema generation
+   */
   tags?: string[];
   /**
    * Add automatically X-Total-Count header to search endpoints
