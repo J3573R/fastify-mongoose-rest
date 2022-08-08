@@ -120,9 +120,6 @@ export default function Search(
       } = request.body;
 
       const operation = model.find(query || q || {});
-      const operationCount = await model
-        .find(query || q || {})
-        .countDocuments();
 
       if (populate) {
         operation.populate(parseInput(populate));
@@ -156,7 +153,12 @@ export default function Search(
 
       const resource = await operation.exec();
 
-      reply.header('X-Total-Count', operationCount);
+      if (options?.enableTotalCountHeader === true) {
+        const operationCount = await model
+          .find(query || q || {})
+          .countDocuments();
+        reply.header('X-Total-Count', operationCount);
+      }
 
       return reply.send(resource);
     },

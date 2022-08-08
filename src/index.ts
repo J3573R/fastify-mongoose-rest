@@ -10,6 +10,10 @@ import Delete from './operations/delete';
 export interface FastifyMongooseRestOptions {
   validationSchema?: object;
   tags?: string[];
+  /**
+   * Add automatically X-Total-Count header to search endpoints
+   */
+  enableTotalCountHeader?: boolean;
 }
 
 export default function FastifyMongooseRest(
