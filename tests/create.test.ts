@@ -1,5 +1,5 @@
 import {SuperAgentTest} from 'supertest';
-import faker from 'faker';
+import {faker} from '@faker-js/faker';
 import TestSetup from './util/setup';
 
 describe('Create', () => {
@@ -15,7 +15,8 @@ describe('Create', () => {
 
   it('should create new document', async () => {
     const name = faker.name.findName();
-    return request
+
+    request
       .post('/persons')
       .expect(200)
       .send({name})

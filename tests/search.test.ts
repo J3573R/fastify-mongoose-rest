@@ -1,5 +1,5 @@
 import {SuperAgentTest} from 'supertest';
-import faker from 'faker';
+import {faker} from '@faker-js/faker';
 import TestSetup from './util/setup';
 import {CatModel, PersonModel} from './util/models';
 
