@@ -31,7 +31,7 @@ describe('details', () => {
     const cats = [];
     for (let i = 0; i < catCount; i++) {
       const {_id} = await CatModel.create({
-        name: faker.name.findName(),
+        name: faker.name.fullName(),
         age: faker.datatype.number({min: 1, max: 20}),
       });
       cats.push(_id);
@@ -50,7 +50,7 @@ describe('details', () => {
   });
 
   it('should return only properties defined in projection', async () => {
-    const person = await PersonModel.create({name: faker.name.findName()});
+    const person = await PersonModel.create({name: faker.name.fullName()});
     await request
       .get(`/persons/${person._id}`)
       .expect(200)
@@ -65,7 +65,7 @@ describe('details', () => {
   });
 
   it('should parse comma separated parameters defined in projection', async () => {
-    const person = await PersonModel.create({name: faker.name.findName()});
+    const person = await PersonModel.create({name: faker.name.fullName()});
     await request
       .get(`/persons/${person._id}`)
       .expect(200)
@@ -80,7 +80,7 @@ describe('details', () => {
   });
 
   it('should return only properties defined in select', async () => {
-    const person = await PersonModel.create({name: faker.name.findName()});
+    const person = await PersonModel.create({name: faker.name.fullName()});
     await request
       .get(`/persons/${person._id}`)
       .expect(200)
@@ -95,7 +95,7 @@ describe('details', () => {
   });
 
   it('should parse comma separated parameters defined in select', async () => {
-    const person = await PersonModel.create({name: faker.name.findName()});
+    const person = await PersonModel.create({name: faker.name.fullName()});
     await request
       .get(`/persons/${person._id}`)
       .expect(200)
