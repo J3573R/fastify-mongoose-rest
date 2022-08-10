@@ -19,11 +19,7 @@ export default class TestSetup {
     this.mongod = await MongoMemoryServer.create();
     const mongodUri = await this.mongod.getUri();
 
-    await Mongoose.connect(mongodUri, {
-      useUnifiedTopology: true,
-      useFindAndModify: true,
-      useNewUrlParser: true,
-    });
+    await Mongoose.connect(mongodUri);
 
     const personRoutes = FastifyMongooseRest('persons', PersonModel, {
       validationSchema: PersonValidationSchema,
