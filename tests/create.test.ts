@@ -16,7 +16,7 @@ describe('Create', () => {
   it('should create new document', async () => {
     const name = faker.name.findName();
 
-    request
+    await request
       .post('/persons')
       .expect(200)
       .send({name})
