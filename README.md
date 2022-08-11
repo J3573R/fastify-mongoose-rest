@@ -142,3 +142,7 @@ P (page) takes `number` as input and is used to calculate value for skip.
 ### PageSize
 
 PageSize takes `number` as input and is used as limit and to calculate value for skip.
+
+### totalCount
+
+`totalCount` parameter takes `boolean` as input and is used to enable `x-total-count` header. The header will show how much how much documents would be available in database with given query.
