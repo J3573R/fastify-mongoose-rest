@@ -79,9 +79,9 @@ Generated url example: `GET https://localhost/cats/:id`
 ### List
 
 `GET` endpoint for getting multiple documents.
-Takes parameters in `querystring` and supports `query`|`q`, `populate`, `projection`, `sort`, `skip`, `limit`, `p` and `pageSize` properties.
+Takes parameters in `querystring` and supports `query`|`q`, `populate`, `projection`, `sort`, `skip`, `limit`, `p`, `pageSize` and `totalCount` properties.
 
-Adds `x-total-count` header to indicate total count of the documents possible to be retrieve by changing skip & limit parameters.
+`x-total-count` header can be enabled by sending `totalCount: true` parameter as part of the request payload. This indicates total count of documents in database with given filters. Can be used to 
 
 Generated url example: `GET https://localhost/cats`
 
@@ -95,7 +95,7 @@ Generated url example: `PATCH https://localhost/cats/:id`
 
 `POST` endpoint for getting multiple documents. Similar to `List` endpoint but takes inputs from `body`.
 
-Adds `x-total-count` header to indicate total count of the documents possible to be retrieve by changing skip & limit parameters.
+`x-total-count` header can be enabled by sending `totalCount: true` parameter as part of the request payload. This indicates total count of documents in database with given filters. Can be used to 
 
 Generated url example: `POST https://localhost/cats/search`
 
