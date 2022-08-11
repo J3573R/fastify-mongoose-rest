@@ -85,6 +85,10 @@ export default function Search(
             type: 'number',
             description: 'PageSize property',
           },
+          totalCount: {
+            type: 'boolean',
+            description: 'Should endpoint return X-Total-Count header',
+          },
         },
       },
       response,
@@ -102,6 +106,7 @@ export default function Search(
           limit?: number;
           p?: number;
           pageSize?: number;
+          totalCount?: boolean;
         };
       }>,
       reply: FastifyReply
@@ -117,6 +122,7 @@ export default function Search(
         limit,
         p,
         pageSize,
+        totalCount,
       } = request.body;
 
       const operation = model.find(query || q || {});
@@ -153,7 +159,7 @@ export default function Search(
 
       const resource = await operation.exec();
 
-      if (options?.enableTotalCountHeader === true) {
+      if (totalCount === true) {
         const operationCount = await model
           .find(query || q || {})
           .countDocuments();

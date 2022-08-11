@@ -132,7 +132,23 @@ describe('list', () => {
       });
   });
 
-  it('should return header X-Total-Count with total count of documents', async () => {
+  it('should return header X-Total-Count with total count of documents if totalCount paremeter is true', async () => {
+    for (let i = 0; i < 10; i++) {
+      await PersonModel.create({name: faker.name.fullName()});
+    }
+    await request
+      .get('/persons')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .query({skip: 0, limit: 5, totalCount: true})
+      .then(({body, header}) => {
+        expect(Array.isArray(body)).toEqual(true);
+        expect(body.length).toEqual(5);
+        expect(header['x-total-count']).toEqual('10');
+      });
+  });
+
+  it('should not return header X-Total-Count if totalCount parameter is not present', async () => {
     for (let i = 0; i < 10; i++) {
       await PersonModel.create({name: faker.name.fullName()});
     }
@@ -144,7 +160,7 @@ describe('list', () => {
       .then(({body, header}) => {
         expect(Array.isArray(body)).toEqual(true);
         expect(body.length).toEqual(5);
-        expect(header['x-total-count']).toEqual('10');
+        expect(header['x-total-count']).toBeUndefined();
       });
   });
 
@@ -262,7 +278,7 @@ describe('list', () => {
       .get('/persons')
       .expect(200)
       .expect('Content-Type', /json/)
-      .query({p: 0, pageSize: 5})
+      .query({p: 0, pageSize: 5, totalCount: true})
       .then(({body, header}) => {
         expect(Array.isArray(body)).toEqual(true);
         expect(body.length).toEqual(5);
@@ -272,7 +288,7 @@ describe('list', () => {
       .get('/persons')
       .expect(200)
       .expect('Content-Type', /json/)
-      .query({p: 1, pageSize: 5})
+      .query({p: 1, pageSize: 5, totalCount: true})
       .then(({body, header}) => {
         expect(Array.isArray(body)).toEqual(true);
         expect(body.length).toEqual(5);
@@ -282,7 +298,7 @@ describe('list', () => {
       .get('/persons')
       .expect(200)
       .expect('Content-Type', /json/)
-      .query({pageSize: 5})
+      .query({pageSize: 5, totalCount: true})
       .then(({body, header}) => {
         expect(Array.isArray(body)).toEqual(true);
         expect(body.length).toEqual(5);
@@ -292,7 +308,7 @@ describe('list', () => {
       .get('/persons')
       .expect(200)
       .expect('Content-Type', /json/)
-      .query({p: 0})
+      .query({p: 0, totalCount: true})
       .then(({body, header}) => {
         expect(Array.isArray(body)).toEqual(true);
         expect(body.length).toEqual(10);

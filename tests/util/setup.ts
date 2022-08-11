@@ -13,7 +13,7 @@ import {
 export default class TestSetup {
   public mongod!: MongoMemoryServer;
 
-  async init(enableTotalCountHeader?: boolean) {
+  async init() {
     const app = fastify();
 
     this.mongod = await MongoMemoryServer.create();
@@ -23,12 +23,10 @@ export default class TestSetup {
 
     const personRoutes = FastifyMongooseRest('persons', PersonModel, {
       validationSchema: PersonValidationSchema,
-      enableTotalCountHeader,
     });
 
     const catRoutes = FastifyMongooseRest('cats', CatModel, {
       validationSchema: CatValidationSchema,
-      enableTotalCountHeader,
     });
 
     Object.values(personRoutes).map(r => app.route(r));

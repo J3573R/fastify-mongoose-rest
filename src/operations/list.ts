@@ -76,6 +76,10 @@ export default function List(
             type: 'number',
             description: 'PageSize property',
           },
+          totalCount: {
+            type: 'boolean',
+            description: 'Should endpoint return X-Total-Count header',
+          },
         },
       },
       response,
@@ -93,6 +97,7 @@ export default function List(
           limit?: number;
           p?: number;
           pageSize?: number;
+          totalCount?: boolean;
         };
       }>,
       reply: FastifyReply
@@ -108,6 +113,7 @@ export default function List(
         limit,
         p,
         pageSize,
+        totalCount,
       } = request.query;
 
       let qs: object = {};
@@ -118,7 +124,6 @@ export default function List(
       }
 
       const operation = model.find(qs);
-      const operationCount = await model.find(qs).countDocuments();
 
       if (populate) {
         operation.populate(parseInput(populate));
@@ -151,7 +156,12 @@ export default function List(
       }
 
       const resource = await operation.exec();
-      reply.header('X-Total-Count', operationCount);
+
+      if (totalCount === true) {
+        const operationCount = await model.find(qs).countDocuments();
+        reply.header('X-Total-Count', operationCount);
+      }
+
       return reply.send(resource);
     },
   };

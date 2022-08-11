@@ -16,10 +16,6 @@ export interface FastifyMongooseRestOptions {
    * Swagger tags for schema generation
    */
   tags?: string[];
-  /**
-   * Add automatically X-Total-Count header to search endpoints
-   */
-  enableTotalCountHeader?: boolean;
 }
 
 export default function FastifyMongooseRest(
