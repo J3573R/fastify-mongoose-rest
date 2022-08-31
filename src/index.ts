@@ -25,7 +25,7 @@ export default function FastifyMongooseRest(
 ) {
   return {
     create: Create(name, model, options),
-    delete: Delete(name, model),
+    delete: Delete(name, model, options),
     details: Details(name, model, options),
     modify: Modify(name, model, options),
     list: List(name, model, options),

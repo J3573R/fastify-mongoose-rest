@@ -29,8 +29,26 @@ export default class TestSetup {
       validationSchema: CatValidationSchema,
     });
 
-    Object.values(personRoutes).map(r => app.route(r));
-    Object.values(catRoutes).map(r => app.route(r));
+    app.route(personRoutes.create);
+    app.route(personRoutes.delete);
+    app.route(personRoutes.details);
+    app.route(personRoutes.list);
+    app.route(personRoutes.modify);
+    app.route(personRoutes.search);
+
+    app.route(catRoutes.create);
+    app.route(catRoutes.delete);
+    app.route(catRoutes.details);
+    app.route(catRoutes.list);
+    app.route(catRoutes.modify);
+    app.route(catRoutes.search);
+
+    app.route({
+      method: 'DELETE',
+      url: '/del',
+      schema: {},
+      handler: () => {},
+    });
 
     const request = await supertest.agent(app.server);
 

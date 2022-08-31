@@ -1,13 +1,18 @@
 import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
 import {Model} from 'mongoose';
+import {FastifyMongooseRestOptions} from '..';
 
 export default function Delete(
   name: string,
-  model: Model<any>
+  model: Model<any>,
+  options?: FastifyMongooseRestOptions
 ): {
   method: HTTPMethods;
   url: string;
   schema: {
+    summary: string;
+    tags: string[];
+    params: object;
     response: object;
   };
   handler: any;
@@ -44,6 +49,17 @@ export default function Delete(
     method: 'DELETE',
     url: `/${name}/:id`,
     schema: {
+      summary: `Delete ${name}`,
+      tags: options?.tags || [],
+      params: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            description: `Unique identifier of ${name}`,
+          },
+        },
+      },
       response,
     },
     handler: async (
