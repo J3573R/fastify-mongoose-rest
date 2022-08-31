@@ -8,23 +8,27 @@ Package that generates fastify route objects from mongoose model. Supports valid
 npm i -s fastify-mongoose-rest
 ```
 
-Basic example:
+**Basic example**
+
+Install packages, copy the script and run it. You can view the result from:
+
+`localhost:3000/documentation`
 
 ```ts
 import Fastify from 'fastify';
-import FastifySwagger from 'fastify-swagger';
+import fastifySwagger from '@fastify/swagger';
 import FastifyMongooseRest from 'fastify-mongoose-rest';
 import Mongoose from 'mongoose';
 
-const schema = new Mongoose.Schema({
+const catSchema = new Mongoose.Schema({
   name: String,
   age: Number,
   owner: String,
 });
 
-const Cat = Mongoose.model('cat', testSchema);
+const Cat = Mongoose.model('cat', catSchema);
 
-const validationSchema = {
+const catValidationSchema = {
   name: {
     type: 'string',
   },
@@ -37,20 +41,57 @@ const validationSchema = {
 };
 
 async function run() {
-  const connection = await Mongoose.connect(
-    'mongodb://localhost/fastify-mongoose-rest'
-  );
-  const CatRoutes = FastifyMongooseRest('cats', testModel, validationSchema);
+  await Mongoose.connect('mongodb://localhost/fastify-mongoose-rest');
+  const catRoutes = FastifyMongooseRest('cats', Cat, {
+    // Tag support for @fastify/swagger package
+    tags: ['Cat'],
+    // Validation schema for fastify
+    validationSchema: catValidationSchema,
+  });
 
-  const fastify = Fastify({});
-  fastify.register(FastifySwagger, {exposeRoute: true});
+  const server = Fastify({});
+  await server.register(fastifySwagger, {exposeRoute: true});
 
-  Object.values(CatRoutes).map(r => fastify.route(r));
+  server.route(catRoutes.create);
+  server.route(catRoutes.delete);
+  server.route(catRoutes.details);
+  server.route(catRoutes.list);
+  server.route(catRoutes.modify);
+  server.route(catRoutes.search);
 
-  fastify.listen(3000);
+  // Shorthand for registering all routes
+  // Object.values(catRoutes).forEach((r) => server.route(r));
+
+  await server.listen({host: '0.0.0.0', port: 3000});
 }
 
 run();
+```
+
+**Custom options**
+
+Generated route can be used only partly if custom messages or handling is required.
+
+```ts
+server.route({
+  method: 'GET',
+  // Urls can be overriden. `details`, `modify` and `delete` handlers
+  // expects `:id` to be present in url.
+  url: '/cats/my-search-route/:id',
+  // Schema definitions can be picked and combined with custom schema
+  schema: {
+    summary: 'My custom summary message',
+    querystring: catRoutes.details.schema.querystring,
+    response: {
+      200: {
+        type: 'string',
+      },
+    },
+  },
+  // This aproach allows use of hooks
+  preHandler: myAwesomeAuthenticatorFunction,
+  handler: catRoutes.details.handler,
+});
 ```
 
 ## Routes
@@ -81,7 +122,7 @@ Generated url example: `GET https://localhost/cats/:id`
 `GET` endpoint for getting multiple documents.
 Takes parameters in `querystring` and supports `query`|`q`, `populate`, `projection`, `sort`, `skip`, `limit`, `p`, `pageSize` and `totalCount` properties.
 
-`x-total-count` header can be enabled by sending `totalCount: true` parameter as part of the request payload. This indicates total count of documents in database with given filters. Can be used to 
+`x-total-count` header can be enabled by sending `totalCount: true` parameter as part of the request payload. This indicates total count of documents in database with given filters. Can be used to
 
 Generated url example: `GET https://localhost/cats`
 
@@ -95,7 +136,7 @@ Generated url example: `PATCH https://localhost/cats/:id`
 
 `POST` endpoint for getting multiple documents. Similar to `List` endpoint but takes inputs from `body`.
 
-`x-total-count` header can be enabled by sending `totalCount: true` parameter as part of the request payload. This indicates total count of documents in database with given filters. Can be used to 
+`x-total-count` header can be enabled by sending `totalCount: true` parameter as part of the request payload. This indicates total count of documents in database with given filters. Can be used to
 
 Generated url example: `POST https://localhost/cats/search`
 
