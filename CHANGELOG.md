@@ -1,6 +1,11 @@
 # Changelog
+## 4.1.0 (2022-08-31)
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+### Bug fixes
+
+* Added summary to delete route schema
+* Added tag support to delete route schema
+* Added parameter validation to delete route
 
 ## 4.0.0 (2022-08-11)
 
