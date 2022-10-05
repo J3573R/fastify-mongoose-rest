@@ -2,7 +2,7 @@ import {SuperAgentTest} from 'supertest';
 import {faker} from '@faker-js/faker';
 import TestSetup from './util/setup';
 
-describe('Insert', () => {
+describe('Insert many', () => {
   const testSetup = new TestSetup();
   let request: SuperAgentTest;
 
@@ -24,7 +24,7 @@ describe('Insert', () => {
     ];
 
     await request
-      .post('/persons/insert')
+      .post('/persons/insert-many')
       .expect(200)
       .send(names)
       .then(res => {

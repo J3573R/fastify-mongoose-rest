@@ -3,7 +3,7 @@ import {Model} from 'mongoose';
 import {FastifyMongooseRestOptions} from '..';
 import {createResponseSchema} from '../helpers';
 
-export default function Insert(
+export default function InsertMany(
   name: string,
   model: Model<any>,
   options?: FastifyMongooseRestOptions
@@ -37,7 +37,7 @@ export default function Insert(
 
   return {
     method: 'POST',
-    url: `/${name}/insert`,
+    url: `/${name}/insert-many`,
     schema: {
       summary: `Create new ${name}s`,
       tags: options?.tags || [],
