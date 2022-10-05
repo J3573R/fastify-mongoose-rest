@@ -144,7 +144,7 @@ Generated url example: `POST https://localhost/cats/search`.
 
 `POST` endpoint for inserting and array of documents. Creates a new document for each object in array.
 
-Generated url example: `PATCH https://localhost/cats/insert-many`
+Generated url example: `POST https://localhost/cats/insert-many`
 
 ## Querying
 
