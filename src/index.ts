@@ -6,6 +6,7 @@ import Modify from './operations/modify';
 import List from './operations/list';
 import Search from './operations/search';
 import Delete from './operations/delete';
+import InsertMany from './operations/insert-many';
 
 export interface FastifyMongooseRestOptions {
   /**
@@ -30,5 +31,6 @@ export default function FastifyMongooseRest(
     modify: Modify(name, model, options),
     list: List(name, model, options),
     search: Search(name, model, options),
+    insertMany: InsertMany(name, model, options),
   };
 }

@@ -35,6 +35,7 @@ export default class TestSetup {
     app.route(personRoutes.list);
     app.route(personRoutes.modify);
     app.route(personRoutes.search);
+    app.route(personRoutes.insertMany);
 
     app.route(catRoutes.create);
     app.route(catRoutes.delete);
@@ -42,6 +43,7 @@ export default class TestSetup {
     app.route(catRoutes.list);
     app.route(catRoutes.modify);
     app.route(catRoutes.search);
+    app.route(catRoutes.insertMany);
 
     app.route({
       method: 'DELETE',

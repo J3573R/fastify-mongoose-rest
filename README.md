@@ -138,7 +138,13 @@ Generated url example: `PATCH https://localhost/cats/:id`
 
 `x-total-count` header can be enabled by sending `totalCount: true` parameter as part of the request payload. This indicates total count of documents in database with given filters. Can be used to
 
-Generated url example: `POST https://localhost/cats/search`
+Generated url example: `POST https://localhost/cats/search`.
+
+### Insert Many
+
+`POST` endpoint for inserting and array of documents. Creates a new document for each object in array.
+
+Generated url example: `POST https://localhost/cats/insert-many`
 
 ## Querying
 
