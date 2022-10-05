@@ -1,4 +1,14 @@
 # Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [4.2.0](https://github.com/J3573R/fastify-mongoose-rest/compare/v4.1.0...v4.2.0) (2022-10-05)
+
+
+### Features
+
+* Added insert route ([941844e](https://github.com/J3573R/fastify-mongoose-rest/commit/941844e90dc303abe6f48292a27c45e7142db490))
+
 ## 4.1.0 (2022-08-31)
 
 ### Bug fixes
