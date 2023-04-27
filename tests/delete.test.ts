@@ -1,6 +1,7 @@
 import {SuperAgentTest} from 'supertest';
 import TestSetup from './util/setup';
-import {PersonModel} from './util/models';
+import {PersonModel, UserModel} from './util/models';
+import generateTestUser from './util/test-user-generator';
 
 describe('Delete', () => {
   const testSetup = new TestSetup();
@@ -34,5 +35,17 @@ describe('Delete', () => {
   });
   it('should return error 404 if given id is not found from database ', async () => {
     await request.delete('/persons/123456abcdef123456abcdef').expect(404);
+  });
+  it('should delete document by userId', async () => {
+    const user1 = await generateTestUser();
+    const user2 = await generateTestUser();
+    await request
+      .delete(`/users/${user1.userId}`)
+      .expect(200)
+      .expect('Content-Type', /json/);
+    const testA = await UserModel.findById(user1._id);
+    const testB = await UserModel.findById(user2._id);
+    expect(testA).toBeFalsy();
+    expect(testB).toBeTruthy();
   });
 });

@@ -57,9 +57,12 @@ export default function Modify(
       }>,
       reply: FastifyReply
     ) => {
-      let resource = await model.findById(request.params.id).lean();
+      const findQuery: {[name: string]: string} = {};
+      findQuery[options?.findProperty || '_id'] = request.params.id;
+
+      let resource = await model.findOne(findQuery).lean();
       resource = updatePropertiesRecursive(resource, request.body);
-      await model.updateOne({_id: request.params.id}, {$set: resource});
+      await model.updateOne(findQuery, {$set: resource});
 
       return reply.send(resource);
     },

@@ -71,9 +71,13 @@ export default function Details(
       }>,
       reply: FastifyReply
     ) => {
+      const findQuery: {[name: string]: string} = {};
+
+      findQuery[options?.findProperty || '_id'] = request.params.id;
+
       const {populate, projection, select} = request.query;
 
-      const query = model.findById(request.params.id);
+      const query = model.findOne(findQuery);
 
       if (populate) {
         query.populate(parseInput(populate));
@@ -88,6 +92,11 @@ export default function Details(
       }
 
       const resource = await query.exec();
+
+      if (!resource) {
+        return reply.status(404).send(new Error('Resource not found'));
+      }
+
       return reply.send(resource);
     },
   };
