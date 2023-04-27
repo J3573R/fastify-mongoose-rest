@@ -47,6 +47,9 @@ async function run() {
     tags: ['Cat'],
     // Validation schema for fastify
     validationSchema: catValidationSchema,
+    // Name of the property that will be used to find documents. Optional, defaults to _id.
+    // For example: if the findProperty is set to 'owner', the /cats/:id route would return a cat by it's owner.
+    findProperty: '_id',
   });
 
   const server = Fastify({});

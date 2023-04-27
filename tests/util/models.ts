@@ -15,6 +15,11 @@ interface Cat {
   age: number;
 }
 
+export interface User {
+  name: string;
+  userId: string;
+}
+
 const personSchema = new Mongoose.Schema<Person>({
   name: {type: String, required: true},
   motto: {type: String},
@@ -35,8 +40,14 @@ const catSchema = new Mongoose.Schema<Cat>({
   age: {type: Number, required: true},
 });
 
+const userSchema = new Mongoose.Schema<User>({
+  name: {type: String, required: true},
+  userId: {type: String, required: true},
+});
+
 const PersonModel = Mongoose.model<Person>('Person', personSchema);
 const CatModel = Mongoose.model<Cat>('Cat', catSchema);
+const UserModel = Mongoose.model<User>('User', userSchema);
 
 const PersonValidationSchema = {
   _id: {type: 'string'},
@@ -58,4 +69,17 @@ const CatValidationSchema = {
   age: {type: 'number'},
 };
 
-export {PersonModel, CatModel, PersonValidationSchema, CatValidationSchema};
+const UserValidationSchema = {
+  _id: {type: 'string'},
+  name: {type: 'string'},
+  userId: {type: 'string'},
+};
+
+export {
+  PersonModel,
+  CatModel,
+  UserModel,
+  PersonValidationSchema,
+  CatValidationSchema,
+  UserValidationSchema,
+};

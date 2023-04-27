@@ -1,6 +1,8 @@
 import {SuperAgentTest} from 'supertest';
+import {faker} from '@faker-js/faker';
 import TestSetup from './util/setup';
 import {PersonModel} from './util/models';
+import generateTestUser from './util/test-user-generator';
 
 describe('Modify', () => {
   const testSetup = new TestSetup();
@@ -64,6 +66,21 @@ describe('Modify', () => {
         expect(body.motto).toEqual('Hello World');
         const updatedPerson = await PersonModel.findById(person._id);
         expect(updatedPerson).toHaveProperty('motto', 'Hello World');
+      });
+  });
+
+  it('should modify document by userId', async () => {
+    await generateTestUser();
+    const user = await generateTestUser();
+    const newName = faker.datatype.number({min: 1, max: 1000}).toString();
+    await request
+      .patch(`/users/${user.userId}`)
+      .send({name: newName})
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then(({body}) => {
+        expect(body).toHaveProperty('name', newName);
+        expect(body).toHaveProperty('userId', user.userId);
       });
   });
 });

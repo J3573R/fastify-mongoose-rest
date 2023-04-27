@@ -70,11 +70,14 @@ export default function Delete(
       }>,
       reply: FastifyReply
     ) => {
-      const res = await model.findById(request.params.id);
+      const findQuery: {[name: string]: string} = {};
+      findQuery[options?.findProperty || '_id'] = request.params.id;
+
+      const res = await model.findOne(findQuery);
       if (!res) {
         return reply.status(404).send(new Error('Resource not found'));
       }
-      const resource = await model.deleteOne({_id: request.params.id});
+      const resource = await model.deleteOne(findQuery);
       return reply.send(resource);
     },
   };

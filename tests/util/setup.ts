@@ -8,6 +8,8 @@ import {
   CatValidationSchema,
   PersonModel,
   PersonValidationSchema,
+  UserModel,
+  UserValidationSchema,
 } from './models';
 
 export default class TestSetup {
@@ -29,6 +31,11 @@ export default class TestSetup {
       validationSchema: CatValidationSchema,
     });
 
+    const userRoutes = FastifyMongooseRest('users', UserModel, {
+      validationSchema: UserValidationSchema,
+      findProperty: 'userId',
+    });
+
     app.route(personRoutes.create);
     app.route(personRoutes.delete);
     app.route(personRoutes.details);
@@ -44,6 +51,14 @@ export default class TestSetup {
     app.route(catRoutes.modify);
     app.route(catRoutes.search);
     app.route(catRoutes.insertMany);
+
+    app.route(userRoutes.create);
+    app.route(userRoutes.delete);
+    app.route(userRoutes.details);
+    app.route(userRoutes.list);
+    app.route(userRoutes.modify);
+    app.route(userRoutes.search);
+    app.route(userRoutes.insertMany);
 
     app.route({
       method: 'DELETE',
