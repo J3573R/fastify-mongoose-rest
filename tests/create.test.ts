@@ -14,7 +14,7 @@ describe('Create', () => {
   });
 
   it('should create new document', async () => {
-    const name = faker.name.fullName();
+    const name = faker.person.fullName();
 
     await request
       .post('/persons')

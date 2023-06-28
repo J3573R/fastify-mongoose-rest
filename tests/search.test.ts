@@ -14,9 +14,9 @@ describe('search', () => {
     await testSetup.reset();
   });
   it('should return list of documents', async () => {
-    const personCount = faker.datatype.number({min: 1, max: 10});
+    const personCount = faker.number.int({min: 1, max: 10});
     for (let i = 0; i < personCount; i++) {
-      await PersonModel.create({name: faker.name.fullName()});
+      await PersonModel.create({name: faker.person.fullName()});
     }
     await request
       .post('/persons/search')
@@ -30,7 +30,7 @@ describe('search', () => {
   });
   it('should return list of documents with skip and limit', async () => {
     for (let i = 0; i <= 2; i++) {
-      await PersonModel.create({name: faker.name.fullName()});
+      await PersonModel.create({name: faker.person.fullName()});
     }
     await request
       .post('/persons/search')
@@ -75,12 +75,12 @@ describe('search', () => {
   });
 
   it('should populate information to returned documents', async () => {
-    const catCount = faker.datatype.number({min: 1, max: 10});
+    const catCount = faker.number.int({min: 1, max: 10});
     const cats = [];
     for (let i = 0; i < catCount; i++) {
       const {_id} = await CatModel.create({
-        name: faker.name.fullName(),
-        age: faker.datatype.number({min: 1, max: 20}),
+        name: faker.person.fullName(),
+        age: faker.number.int({min: 1, max: 20}),
       });
       cats.push(_id);
     }
@@ -130,7 +130,7 @@ describe('search', () => {
   });
 
   it('should return only properties defined in projection', async () => {
-    await PersonModel.create({name: faker.name.fullName()});
+    await PersonModel.create({name: faker.person.fullName()});
     await request
       .post('/persons/search')
       .expect(200)
@@ -147,7 +147,7 @@ describe('search', () => {
   });
 
   it('should parse comma separated parameters defined in projection', async () => {
-    await PersonModel.create({name: faker.name.fullName()});
+    await PersonModel.create({name: faker.person.fullName()});
     await request
       .post('/persons/search')
       .expect(200)
@@ -236,7 +236,7 @@ describe('search', () => {
 
   it('should return header X-Total-Count with total count of documents if totalCount paremeter is true', async () => {
     for (let i = 0; i < 10; i++) {
-      await PersonModel.create({name: faker.name.fullName()});
+      await PersonModel.create({name: faker.person.fullName()});
     }
     await request
       .post('/persons/search')
@@ -252,7 +252,7 @@ describe('search', () => {
 
   it('should not return header X-Total-Count if totalCount paremeter is not present', async () => {
     for (let i = 0; i < 10; i++) {
-      await PersonModel.create({name: faker.name.fullName()});
+      await PersonModel.create({name: faker.person.fullName()});
     }
     await request
       .post('/persons/search')
@@ -268,7 +268,7 @@ describe('search', () => {
 
   it('should return amount of documents defined in page and pageSize', async () => {
     for (let i = 0; i < 10; i++) {
-      await PersonModel.create({name: faker.name.fullName()});
+      await PersonModel.create({name: faker.person.fullName()});
     }
     await request
       .post('/persons/search')

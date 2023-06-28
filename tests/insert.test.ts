@@ -15,12 +15,12 @@ describe('Insert many', () => {
 
   it('Should create new documents', async () => {
     const names = [
-      {name: faker.name.fullName()},
-      {name: faker.name.fullName()},
-      {name: faker.name.fullName()},
-      {name: faker.name.fullName()},
-      {name: faker.name.fullName()},
-      {name: faker.name.fullName()},
+      {name: faker.person.fullName()},
+      {name: faker.person.fullName()},
+      {name: faker.person.fullName()},
+      {name: faker.person.fullName()},
+      {name: faker.person.fullName()},
+      {name: faker.person.fullName()},
     ];
 
     await request

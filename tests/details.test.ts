@@ -53,12 +53,12 @@ describe('details', () => {
   });
 
   it('should populate information to returned document', async () => {
-    const catCount = faker.datatype.number({min: 1, max: 10});
+    const catCount = faker.number.int({min: 1, max: 10});
     const cats = [];
     for (let i = 0; i < catCount; i++) {
       const {_id} = await CatModel.create({
-        name: faker.name.fullName(),
-        age: faker.datatype.number({min: 1, max: 20}),
+        name: faker.person.fullName(),
+        age: faker.number.int({min: 1, max: 20}),
       });
       cats.push(_id);
     }
@@ -76,7 +76,7 @@ describe('details', () => {
   });
 
   it('should return only properties defined in projection', async () => {
-    const person = await PersonModel.create({name: faker.name.fullName()});
+    const person = await PersonModel.create({name: faker.person.fullName()});
     await request
       .get(`/persons/${person._id}`)
       .expect(200)
@@ -91,7 +91,7 @@ describe('details', () => {
   });
 
   it('should parse comma separated parameters defined in projection', async () => {
-    const person = await PersonModel.create({name: faker.name.fullName()});
+    const person = await PersonModel.create({name: faker.person.fullName()});
     await request
       .get(`/persons/${person._id}`)
       .expect(200)
@@ -106,7 +106,7 @@ describe('details', () => {
   });
 
   it('should return only properties defined in select', async () => {
-    const person = await PersonModel.create({name: faker.name.fullName()});
+    const person = await PersonModel.create({name: faker.person.fullName()});
     await request
       .get(`/persons/${person._id}`)
       .expect(200)
@@ -121,7 +121,7 @@ describe('details', () => {
   });
 
   it('should parse comma separated parameters defined in select', async () => {
-    const person = await PersonModel.create({name: faker.name.fullName()});
+    const person = await PersonModel.create({name: faker.person.fullName()});
     await request
       .get(`/persons/${person._id}`)
       .expect(200)
