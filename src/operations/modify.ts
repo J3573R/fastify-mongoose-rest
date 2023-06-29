@@ -60,7 +60,7 @@ export default function Modify(
       const findQuery: {[name: string]: string} = {};
       findQuery[options?.findProperty || '_id'] = request.params.id;
 
-      let resource = await model.findOne(findQuery).lean();
+      let resource = await model.findOne(findQuery);
       resource = updatePropertiesRecursive(resource, request.body);
       await model.updateOne(findQuery, {$set: resource});
 

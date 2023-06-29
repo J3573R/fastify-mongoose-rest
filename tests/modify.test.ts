@@ -72,7 +72,7 @@ describe('Modify', () => {
   it('should modify document by userId', async () => {
     await generateTestUser();
     const user = await generateTestUser();
-    const newName = faker.datatype.number({min: 1, max: 1000}).toString();
+    const newName = faker.number.int({min: 1, max: 1000}).toString();
     await request
       .patch(`/users/${user.userId}`)
       .send({name: newName})
