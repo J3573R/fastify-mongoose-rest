@@ -3,7 +3,7 @@ import {Model} from 'mongoose';
 import {FastifyMongooseRestOptions} from '../types';
 import {createResponseSchema, parseInput} from '../utils';
 
-export default function Details(
+export function Details(
   basePath: string,
   model: Model<any>,
   options?: FastifyMongooseRestOptions

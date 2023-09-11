@@ -1,12 +1,13 @@
 import {Model} from 'mongoose';
-
-import Details from './operations/details';
-import Create from './operations/create';
-import Modify from './operations/modify';
-import List from './operations/list';
-import Search from './operations/search';
-import Delete from './operations/delete';
-import InsertMany from './operations/insert-many';
+import {
+  Details,
+  Create,
+  Modify,
+  List,
+  Search,
+  Delete,
+  InsertMany,
+} from './operations';
 import {FastifyMongooseRestOptions} from './types';
 import {addSlashToPath} from './utils';
 

@@ -3,7 +3,7 @@ import {Model} from 'mongoose';
 import {FastifyMongooseRestOptions} from '../types';
 import {createResponseSchema, updatePropertiesRecursive} from '../utils';
 
-export default function Modify(
+export function Modify(
   basePath: string,
   model: Model<any>,
   options?: FastifyMongooseRestOptions

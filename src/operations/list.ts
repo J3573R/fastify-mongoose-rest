@@ -7,7 +7,7 @@ import {
   parseInput,
 } from '../utils';
 
-export default function List(
+export function List(
   basePath: string,
   model: Model<any>,
   options?: FastifyMongooseRestOptions

@@ -7,7 +7,7 @@ import {
   parseInput,
 } from '../utils';
 
-export default function Search(
+export function Search(
   basePath: string,
   model: Model<any>,
   options?: FastifyMongooseRestOptions
