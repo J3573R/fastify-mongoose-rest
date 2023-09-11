@@ -4,7 +4,7 @@ import {FastifyMongooseRestOptions} from '../types';
 import {createResponseSchema} from '../helpers';
 
 export default function Create(
-  name: string,
+  basePath: string,
   model: Model<any>,
   options?: FastifyMongooseRestOptions
 ): {
@@ -36,9 +36,9 @@ export default function Create(
 
   return {
     method: 'POST',
-    url: `/${name}`,
+    url: basePath,
     schema: {
-      summary: `Create new ${name}`,
+      summary: `Create a new ${model.modelName} resource`,
       tags: options?.tags || [],
       body,
       response,

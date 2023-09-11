@@ -4,7 +4,7 @@ import {FastifyMongooseRestOptions} from '../types';
 import {createResponseSchema, updatePropertiesRecursive} from '../helpers';
 
 export default function Modify(
-  name: string,
+  basePath: string,
   model: Model<any>,
   options?: FastifyMongooseRestOptions
 ): {
@@ -35,9 +35,9 @@ export default function Modify(
 
   return {
     method: 'PATCH',
-    url: `/${name}/:id`,
+    url: `${basePath}/:id`,
     schema: {
-      summary: `Modify existing ${name}`,
+      summary: `Modify a existing ${model.modelName} resource`,
       tags: options?.tags || [],
       params: {
         type: 'object',

@@ -8,7 +8,7 @@ import {
 } from '../helpers';
 
 export default function List(
-  name: string,
+  basePath: string,
   model: Model<any>,
   options?: FastifyMongooseRestOptions
 ): {
@@ -29,9 +29,9 @@ export default function List(
 
   return {
     method: 'GET',
-    url: `/${name}`,
+    url: `${basePath}`,
     schema: {
-      summary: `List ${name}`,
+      summary: `List ${model.modelName} resources`,
       tags: options?.tags || [],
       querystring: {
         type: 'object',

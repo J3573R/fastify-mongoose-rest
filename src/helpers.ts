@@ -12,6 +12,15 @@ export function parseInput(input: string) {
   }
 }
 
+/**
+ * Add slash to path if it does not have one.
+ * @param path Path to add slash to
+ * @returns Path with slash at the start
+ */
+export function addSlashToPath(path: string) {
+  return path[0] === '/' ? path : `/${path}`;
+}
+
 export function createResponseSchema(
   schema: object,
   type: 'object' | 'array'

@@ -8,7 +8,7 @@ import {
 } from '../helpers';
 
 export default function Search(
-  name: string,
+  basePath: string,
   model: Model<any>,
   options?: FastifyMongooseRestOptions
 ): {
@@ -38,9 +38,9 @@ export default function Search(
 
   return {
     method: 'POST',
-    url: `/${name}/search`,
+    url: `${basePath}/search`,
     schema: {
-      summary: `Search ${name}`,
+      summary: `Search through ${model.modelName} resources`,
       tags: options?.tags || [],
       body: {
         type: 'object',

@@ -4,7 +4,7 @@ import {FastifyMongooseRestOptions} from '../types';
 import {createResponseSchema, parseInput} from '../helpers';
 
 export default function Details(
-  name: string,
+  basePath: string,
   model: Model<any>,
   options?: FastifyMongooseRestOptions
 ): {
@@ -26,16 +26,16 @@ export default function Details(
 
   return {
     method: 'GET',
-    url: `/${name}/:id`,
+    url: `${basePath}/:id`,
     schema: {
-      summary: `Get details of single ${name}`,
+      summary: `Get details of a single ${model.modelName} resource`,
       tags: options?.tags || [],
       params: {
         type: 'object',
         properties: {
           id: {
             type: 'string',
-            description: `Unique identifier of ${name}`,
+            description: `Unique identifier of ${model.modelName}`,
           },
         },
       },

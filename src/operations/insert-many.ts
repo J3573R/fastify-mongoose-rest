@@ -4,7 +4,7 @@ import {FastifyMongooseRestOptions} from '../types';
 import {createResponseSchema} from '../helpers';
 
 export default function InsertMany(
-  name: string,
+  basePath: string,
   model: Model<any>,
   options?: FastifyMongooseRestOptions
 ): {
@@ -37,9 +37,9 @@ export default function InsertMany(
 
   return {
     method: 'POST',
-    url: `/${name}/insert-many`,
+    url: `${basePath}/insert-many`,
     schema: {
-      summary: `Create new ${name}s`,
+      summary: `Create multiple new ${model.modelName} resources`,
       tags: options?.tags || [],
       body,
       response,
