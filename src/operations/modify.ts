@@ -1,7 +1,7 @@
 import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
 import {Model} from 'mongoose';
 import {FastifyMongooseRestOptions} from '../types';
-import {createResponseSchema, updatePropertiesRecursive} from '../helpers';
+import {createResponseSchema, updatePropertiesRecursive} from '../utils';
 
 export default function Modify(
   basePath: string,

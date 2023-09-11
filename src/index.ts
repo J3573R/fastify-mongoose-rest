@@ -8,7 +8,7 @@ import Search from './operations/search';
 import Delete from './operations/delete';
 import InsertMany from './operations/insert-many';
 import {FastifyMongooseRestOptions} from './types';
-import {addSlashToPath} from './helpers';
+import {addSlashToPath} from './utils';
 
 /**
  * Create a new FastifyMongooseRest instance

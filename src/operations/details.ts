@@ -1,7 +1,7 @@
 import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
 import {Model} from 'mongoose';
 import {FastifyMongooseRestOptions} from '../types';
-import {createResponseSchema, parseInput} from '../helpers';
+import {createResponseSchema, parseInput} from '../utils';
 
 export default function Details(
   basePath: string,

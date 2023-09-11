@@ -5,7 +5,7 @@ import {
   calculateSkipAndLimit,
   createResponseSchema,
   parseInput,
-} from '../helpers';
+} from '../utils';
 
 export default function List(
   basePath: string,
