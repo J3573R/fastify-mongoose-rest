@@ -1,6 +1,6 @@
 import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
 import {Model} from 'mongoose';
-import {FastifyMongooseRestOptions} from '..';
+import {FastifyMongooseRestOptions} from '../types';
 
 export default function Delete(
   name: string,

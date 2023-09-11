@@ -7,21 +7,7 @@ import List from './operations/list';
 import Search from './operations/search';
 import Delete from './operations/delete';
 import InsertMany from './operations/insert-many';
-
-export interface FastifyMongooseRestOptions {
-  /**
-   * Faster / Ajv validation schema
-   */
-  validationSchema?: object;
-  /**
-   * Swagger tags for schema generation
-   */
-  tags?: string[];
-  /**
-   * The name of the property that will be used as :id param on routes. If not set, _id will be used.
-   */
-  findProperty?: string;
-}
+import {FastifyMongooseRestOptions} from './types';
 
 export default function FastifyMongooseRest(
   name: string,

@@ -1,6 +1,6 @@
 import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
 import {Model} from 'mongoose';
-import {FastifyMongooseRestOptions} from '..';
+import {FastifyMongooseRestOptions} from '../types';
 import {createResponseSchema} from '../helpers';
 
 export default function Create(
