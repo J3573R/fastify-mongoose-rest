@@ -28,18 +28,19 @@ import {addSlashToPath} from './utils';
  * const fastifyMongooseRest = FastifyMongooseRest('/cats', Cat);
  * ```
  */
-export default function FastifyMongooseRest(
+export default function FastifyMongooseRest<T = unknown>(
   basePath: string,
-  model: Model<any>,
+  model: Model<T>,
   options?: FastifyMongooseRestOptions
 ) {
+  const newBasePath = addSlashToPath(basePath);
   return {
-    create: Create(addSlashToPath(basePath), model, options),
-    delete: Delete(addSlashToPath(basePath), model, options),
-    details: Details(addSlashToPath(basePath), model, options),
-    modify: Modify(addSlashToPath(basePath), model, options),
-    list: List(addSlashToPath(basePath), model, options),
-    search: Search(addSlashToPath(basePath), model, options),
-    insertMany: InsertMany(addSlashToPath(basePath), model, options),
+    create: Create(newBasePath, model, options),
+    delete: Delete(newBasePath, model, options),
+    details: Details(newBasePath, model, options),
+    modify: Modify(newBasePath, model, options),
+    list: List(newBasePath, model, options),
+    search: Search(newBasePath, model, options),
+    insertMany: InsertMany(newBasePath, model, options),
   };
 }
