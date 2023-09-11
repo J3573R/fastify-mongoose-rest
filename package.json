@@ -9,8 +9,10 @@
     "clean": "gts clean",
     "compile": "tsc",
     "fix": "gts fix",
-    "pretest": "npm run lint && npm run compile",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "pretest": "npm run lint",
+    "prepublishOnly": "npm run test",
+    "prepare": "npm run compile"
   },
   "repository": {
     "type": "git",
