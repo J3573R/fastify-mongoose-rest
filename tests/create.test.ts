@@ -6,10 +6,13 @@ describe('Create', () => {
   const testSetup = new TestSetup();
   let request: SuperAgentTest;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     request = await testSetup.init();
   });
   afterEach(async () => {
+    await testSetup.clear();
+  });
+  afterAll(async () => {
     await testSetup.reset();
   });
 
@@ -23,5 +26,17 @@ describe('Create', () => {
       .then(res => {
         expect(res.body.name).toEqual(name);
       });
+  });
+
+  it('should create a new document', async () => {
+    const name = faker.person.fullName();
+    const userId = faker.string.uuid();
+
+    const {body} = await request
+      .post('/users2')
+      .expect(200)
+      .send({name, userId});
+
+    expect(body).toEqual(expect.objectContaining({name, userId}));
   });
 });

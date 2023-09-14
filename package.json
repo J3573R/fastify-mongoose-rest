@@ -9,8 +9,8 @@
     "clean": "gts clean",
     "compile": "tsc",
     "fix": "gts fix",
-    "test": "jest --coverage",
-    "pretest": "npm run lint",
+    "test": "jest --coverage --verbose --silent",
+    "pretest": "npm run lint && npm run compile -- --noEmit",
     "prepublishOnly": "npm run test",
     "prepare": "npm run compile"
   },

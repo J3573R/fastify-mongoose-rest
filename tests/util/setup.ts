@@ -11,12 +11,18 @@ import {
   UserModel,
   UserValidationSchema,
 } from './models';
+import mongoose from 'mongoose';
 
 export default class TestSetup {
   public mongod!: MongoMemoryServer;
 
   async init() {
     const app = fastify();
+
+    app.setErrorHandler((error, request, reply) => {
+      console.error(error);
+      reply.send(error);
+    });
 
     this.mongod = await MongoMemoryServer.create();
     const mongodUri = await this.mongod.getUri();
@@ -35,6 +41,9 @@ export default class TestSetup {
       validationSchema: UserValidationSchema,
       findProperty: 'userId',
     });
+
+    // This is just to test the default value of options and slash at the start generation
+    const users2Routes = FastifyMongooseRest('/users2', UserModel);
 
     app.route(personRoutes.create);
     app.route(personRoutes.delete);
@@ -60,18 +69,15 @@ export default class TestSetup {
     app.route(userRoutes.search);
     app.route(userRoutes.insertMany);
 
-    app.route({
-      method: 'DELETE',
-      url: '/del',
-      schema: {},
-      handler: () => {},
-    });
-
-    const request = await supertest.agent(app.server);
+    app.route(users2Routes.create);
 
     await app.ready();
 
-    return request;
+    return supertest.agent(app.server);
+  }
+
+  async clear() {
+    await mongoose.connection.db.dropDatabase();
   }
 
   async reset() {

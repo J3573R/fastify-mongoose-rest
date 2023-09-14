@@ -1,86 +1,124 @@
 import {SuperAgentTest} from 'supertest';
-import {faker} from '@faker-js/faker';
 import TestSetup from './util/setup';
-import {PersonModel} from './util/models';
-import generateTestUser from './util/test-user-generator';
+import {createMockPerson, createMockUser} from './util/mock-data';
+import {faker} from '@faker-js/faker';
+import {Types} from 'mongoose';
 
 describe('Modify', () => {
   const testSetup = new TestSetup();
   let request: SuperAgentTest;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     request = await testSetup.init();
   });
   afterEach(async () => {
+    await testSetup.clear();
+  });
+  afterAll(async () => {
     await testSetup.reset();
   });
 
   it('should modify existing document', async () => {
-    const person = await PersonModel.create({name: 'asd'});
-    return request
+    const person = await createMockPerson();
+
+    const {body} = await request
       .patch(`/persons/${person._id}`)
       .expect(200)
-      .send({name: 'qwe'})
-      .then(res => {
-        expect(res.body.name).toEqual('qwe');
-      });
+      .send({name: 'qwe'});
+
+    expect(body).toEqual(
+      expect.objectContaining({
+        name: 'qwe',
+        motto: person.motto,
+        address: person.address,
+      })
+    );
   });
 
-  it('should be able to modify only one subdocument property', async () => {
-    const person = await PersonModel.create({
-      name: 'asd',
-      address: {
-        street: 'Keskuojankatu',
-        city: 'Tampere',
-      },
-    });
-    const changes = {
-      name: 'qwe',
-      address: {
-        street: 'Jasperintie',
-      },
-    };
-    return request
+  it('should be able to modify only one sub document property', async () => {
+    const person = await createMockPerson();
+
+    const street = faker.location.streetAddress();
+
+    const {body} = await request
       .patch(`/persons/${person._id}`)
       .expect(200)
-      .send(changes)
-      .then(async ({body}) => {
-        expect(body.name).toEqual('qwe');
-        expect(body.address.city).toEqual('Tampere');
-        expect(body.address.street).toEqual('Jasperintie');
+      .send({address: {street}});
 
-        const updatedPerson = await PersonModel.findById(person._id);
-        expect(updatedPerson).toMatchObject(changes);
-      });
+    expect(body).toEqual(
+      expect.objectContaining({
+        name: person.name,
+        motto: person.motto,
+        address: {
+          street,
+          city: person.address.city,
+        },
+      })
+    );
   });
 
   it('should be able to add non-existing properties if in schema', async () => {
-    const person = await PersonModel.create({
-      name: 'asd',
+    const person = await createMockPerson({
+      motto: undefined,
     });
-    return request
+
+    const motto = faker.lorem.sentence();
+
+    const {body} = await request
       .patch(`/persons/${person._id}`)
       .expect(200)
-      .send({motto: 'Hello World'})
-      .then(async ({body}) => {
-        expect(body.motto).toEqual('Hello World');
-        const updatedPerson = await PersonModel.findById(person._id);
-        expect(updatedPerson).toHaveProperty('motto', 'Hello World');
-      });
+      .send({motto});
+
+    expect(body).toEqual(
+      expect.objectContaining({
+        name: person.name,
+        motto,
+        address: person.address,
+      })
+    );
   });
 
-  it('should modify document by userId', async () => {
-    await generateTestUser();
-    const user = await generateTestUser();
-    const newName = faker.number.int({min: 1, max: 1000}).toString();
-    await request
-      .patch(`/users/${user.userId}`)
-      .send({name: newName})
+  it('should not be able to add non-existing properties if not in schema', async () => {
+    const person = await createMockPerson();
+
+    const favoriteFood = faker.lorem.sentence();
+
+    const {body} = await request
+      .patch(`/persons/${person._id}`)
       .expect(200)
-      .expect('Content-Type', /json/)
-      .then(({body}) => {
-        expect(body).toHaveProperty('name', newName);
-        expect(body).toHaveProperty('userId', user.userId);
-      });
+      .send({favoriteFood});
+
+    expect(body).not.toHaveProperty('favoriteFood');
+  });
+
+  it('should not be able to modify userId', async () => {
+    const user = await createMockUser();
+
+    const name = faker.person.fullName();
+
+    const {body} = await request
+      .patch(`/users/${user.userId}`)
+      .expect(200)
+      .send({name});
+
+    expect(body).toEqual(
+      expect.objectContaining({
+        name,
+        userId: user.userId,
+      })
+    );
+  });
+
+  it('should return 404 if resource not found', async () => {
+    const {body} = await request
+      .patch(`/persons/${new Types.ObjectId()}`)
+      .expect(404)
+      .send({name: 'qwe'});
+
+    expect(body).toEqual(
+      expect.objectContaining({
+        message: 'Resource not found',
+      })
+    );
   });
 });
