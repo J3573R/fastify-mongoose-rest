@@ -1,4 +1,5 @@
 import {Model} from 'mongoose';
+import {FindOptions} from './types';
 
 /**
  * If input is string, try to parse it to an object and if not possible, return the string with commas replaced by spaces.
@@ -101,4 +102,70 @@ export function calculateSkipAndLimit(p?: number, pageSize?: number) {
   const skip = requestedPageSize * requestedPage;
   const limit = requestedPageSize;
   return {skip, limit};
+}
+
+/**
+ * Create a find operation for mongoose model.
+ * @param model Mongoose model to use
+ * @param options Options for find operation
+ * @returns Resources and totalCount if requested
+ */
+export async function findOperation<T>(model: Model<T>, options: FindOptions) {
+  const {
+    query,
+    q,
+    populate,
+    projection,
+    sort,
+    select,
+    skip,
+    limit,
+    p,
+    page,
+    pageSize,
+    totalCount,
+  } = options;
+
+  const operation = model.find(parseInput(query || q || {}));
+
+  if (populate) {
+    operation.populate(parseInput(populate));
+  }
+
+  if (projection) {
+    operation.projection(parseInput(projection));
+  }
+
+  if (sort) {
+    operation.sort(parseInput(sort));
+  }
+
+  if (select) {
+    operation.select(parseInput(select));
+  }
+
+  if (page || p || pageSize) {
+    const calculation = calculateSkipAndLimit(page || p, pageSize);
+    operation.skip(calculation.skip);
+    operation.limit(calculation.limit);
+  } else {
+    if (skip) {
+      operation.skip(skip);
+    }
+
+    if (limit) {
+      operation.limit(limit);
+    }
+  }
+
+  const resources = await operation;
+
+  if (totalCount === true) {
+    const operationCount = await model
+      .find(parseInput(query || q || {}))
+      .countDocuments();
+    return {resources, totalCount: operationCount};
+  }
+
+  return {resources};
 }

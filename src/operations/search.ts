@@ -1,11 +1,7 @@
 import {FastifyReply, FastifyRequest} from 'fastify';
 import {Model} from 'mongoose';
 import {FastifyMongooseRestOptions, FindOptions} from '../types';
-import {
-  calculateSkipAndLimit,
-  createResponseSchema,
-  parseInput,
-} from '../utils';
+import {createResponseSchema, findOperation} from '../utils';
 
 export function Search<T>(
   basePath: string,
@@ -105,62 +101,13 @@ export function Search<T>(
       response,
     },
     handler: async (request, reply) => {
-      const {
-        query,
-        q,
-        populate,
-        projection,
-        sort,
-        select,
-        skip,
-        limit,
-        p,
-        pageSize,
-        totalCount,
-      } = request.body;
+      const {resources, totalCount} = await findOperation(model, request.body);
 
-      const operation = model.find(query || q || {});
-
-      if (populate) {
-        operation.populate(parseInput(populate));
+      if (totalCount) {
+        reply.header('X-Total-Count', totalCount);
       }
 
-      if (projection) {
-        operation.projection(parseInput(projection));
-      }
-
-      if (sort) {
-        operation.sort(parseInput(sort));
-      }
-
-      if (select) {
-        operation.select(parseInput(select));
-      }
-
-      if (skip) {
-        operation.skip(skip);
-      }
-
-      if (limit) {
-        operation.limit(limit);
-      }
-
-      if (p || pageSize) {
-        const {skip, limit} = calculateSkipAndLimit(p, pageSize);
-        operation.skip(skip);
-        operation.limit(limit);
-      }
-
-      const resource = await operation.exec();
-
-      if (totalCount === true) {
-        const operationCount = await model
-          .find(query || q || {})
-          .countDocuments();
-        reply.header('X-Total-Count', operationCount);
-      }
-
-      return reply.send(resource);
+      return reply.send(resources);
     },
   };
 }
