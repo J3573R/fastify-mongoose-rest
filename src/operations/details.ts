@@ -1,27 +1,41 @@
-import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {FastifyReply, FastifyRequest} from 'fastify';
 import {Model} from 'mongoose';
 import {FastifyMongooseRestOptions} from '../types';
 import {createResponseSchema, parseInput} from '../utils';
 
-export function Details(
+export function Details<T>(
   basePath: string,
-  model: Model<any>,
+  model: Model<T>,
   options?: FastifyMongooseRestOptions
 ): {
-  method: HTTPMethods;
+  method: 'GET';
   url: string;
   schema: {
     summary: string;
-    tags: string[];
+    tags?: string[];
     params: object;
     querystring: object;
     response: object;
   };
-  handler: any;
+  handler: (
+    request: FastifyRequest<{
+      Params: {
+        id: string;
+      };
+      Querystring: {
+        populate?: string;
+        projection?: string;
+        select?: string;
+      };
+    }>,
+    reply: FastifyReply
+  ) => Promise<any>;
 } {
+  const {tags, findProperty, validationSchema} = options || {};
+
   let response = {};
-  if (options?.validationSchema) {
-    response = createResponseSchema(options.validationSchema, 'object');
+  if (validationSchema) {
+    response = createResponseSchema(validationSchema, 'object');
   }
 
   return {
@@ -29,7 +43,7 @@ export function Details(
     url: `${basePath}/:id`,
     schema: {
       summary: `Get details of a single ${model.modelName} resource`,
-      tags: options?.tags || [],
+      tags,
       params: {
         type: 'object',
         properties: {
@@ -58,26 +72,12 @@ export function Details(
       },
       response,
     },
-    handler: async (
-      request: FastifyRequest<{
-        Params: {
-          id: string;
-        };
-        Querystring: {
-          populate?: string;
-          projection?: string;
-          select?: string;
-        };
-      }>,
-      reply: FastifyReply
-    ) => {
-      const findQuery: {[name: string]: string} = {};
-
-      findQuery[options?.findProperty || '_id'] = request.params.id;
-
+    handler: async (request, reply) => {
       const {populate, projection, select} = request.query;
 
-      const query = model.findOne(findQuery);
+      const query = model.findOne({
+        [findProperty || '_id']: request.params.id,
+      } as any);
 
       if (populate) {
         query.populate(parseInput(populate));

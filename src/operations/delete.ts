@@ -1,24 +1,30 @@
-import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {FastifyReply, FastifyRequest} from 'fastify';
 import {Model} from 'mongoose';
 import {FastifyMongooseRestOptions} from '../types';
 
-export function Delete(
+export function Delete<T>(
   basePath: string,
-  model: Model<any>,
+  model: Model<T>,
   options?: FastifyMongooseRestOptions
 ): {
-  method: HTTPMethods;
+  method: 'DELETE';
   url: string;
   schema: {
     summary: string;
-    tags: string[];
+    tags?: string[];
     params: object;
     response: object;
   };
-  handler: any;
+  handler: (
+    request: FastifyRequest<{
+      Params: {
+        id: string;
+      };
+    }>,
+    reply: FastifyReply
+  ) => Promise<any>;
 } {
-  let response: Record<number, any> = {};
-  response = {
+  const response = {
     200: {
       description: 'Success',
       type: 'object',
@@ -45,12 +51,13 @@ export function Delete(
     },
   };
 
+  const {tags, findProperty} = options || {};
   return {
     method: 'DELETE',
     url: `${basePath}/:id`,
     schema: {
       summary: `Delete a ${model.modelName} resource`,
-      tags: options?.tags || [],
+      tags,
       params: {
         type: 'object',
         properties: {
@@ -62,23 +69,14 @@ export function Delete(
       },
       response,
     },
-    handler: async (
-      request: FastifyRequest<{
-        Params: {
-          id: string;
-        };
-      }>,
-      reply: FastifyReply
-    ) => {
-      const findQuery: {[name: string]: string} = {};
-      findQuery[options?.findProperty || '_id'] = request.params.id;
-
-      const res = await model.findOne(findQuery);
-      if (!res) {
+    handler: async (request, reply) => {
+      const result = await model.deleteOne({
+        [findProperty || '_id']: request.params.id,
+      } as any);
+      if (result.deletedCount < 1) {
         return reply.status(404).send(new Error('Resource not found'));
       }
-      const resource = await model.deleteOne(findQuery);
-      return reply.send(resource);
+      return reply.send(result);
     },
   };
 }

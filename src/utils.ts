@@ -1,15 +1,20 @@
+import {Model} from 'mongoose';
+
 /**
- * Try safely to parse input to object.
- * Return string (w/o commas) if not possible.
+ * If input is string, try to parse it to an object and if not possible, return the string with commas replaced by spaces.
+ * If input is object, return it as is.
+ * @param input Input to parse
+ * @returns Parsed input
  */
-export function parseInput(input: string) {
-  try {
-    const result = JSON.parse(input);
-    return result;
-  } catch (error) {
-    const result = input.replace(/,/g, ' ');
-    return result;
+export function parseInput(input: string | object) {
+  if (typeof input === 'string') {
+    try {
+      return JSON.parse(input);
+    } catch (_) {
+      return input.replace(/,/g, ' ');
+    }
   }
+  return input;
 }
 
 /**
@@ -21,6 +26,12 @@ export function addSlashToPath(path: string) {
   return path[0] === '/' ? path : `/${path}`;
 }
 
+/**
+ * Create response schema for a operation.
+ * @param schema Schema to use for response
+ * @param type Type of response. Either 'object' or 'array'
+ * @returns Response schema
+ */
 export function createResponseSchema(
   schema: object,
   type: 'object' | 'array'
@@ -66,10 +77,7 @@ export function createResponseSchema(
 /**
  * Update properties of object recursively.
  */
-export function updatePropertiesRecursive(
-  obj: Record<string, any>,
-  changes: Record<string, any>
-) {
+export function updatePropertiesRecursive(obj: any, changes: any) {
   Object.keys(changes).map(key => {
     if (typeof obj[key] === 'object' && typeof changes[key] === 'object') {
       if (changes[key] !== null) {

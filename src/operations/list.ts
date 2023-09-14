@@ -1,30 +1,37 @@
-import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {FastifyReply, FastifyRequest} from 'fastify';
 import {Model} from 'mongoose';
-import {FastifyMongooseRestOptions} from '../types';
+import {FastifyMongooseRestOptions, FindQueryOptions} from '../types';
 import {
   calculateSkipAndLimit,
   createResponseSchema,
   parseInput,
 } from '../utils';
 
-export function List(
+export function List<T>(
   basePath: string,
-  model: Model<any>,
+  model: Model<T>,
   options?: FastifyMongooseRestOptions
 ): {
-  method: HTTPMethods;
+  method: 'GET';
   url: string;
   schema: {
     summary: string;
-    tags: string[];
+    tags?: string[];
     querystring: object;
     response: object;
   };
-  handler: any;
+  handler: (
+    request: FastifyRequest<{
+      Querystring: FindQueryOptions;
+    }>,
+    reply: FastifyReply
+  ) => Promise<any>;
 } {
+  const {tags, validationSchema} = options || {};
+
   let response = {};
-  if (options?.validationSchema) {
-    response = createResponseSchema(options.validationSchema, 'array');
+  if (validationSchema) {
+    response = createResponseSchema(validationSchema, 'array');
   }
 
   return {
@@ -32,7 +39,7 @@ export function List(
     url: `${basePath}`,
     schema: {
       summary: `List ${model.modelName} resources`,
-      tags: options?.tags || [],
+      tags,
       querystring: {
         type: 'object',
         properties: {
@@ -61,19 +68,19 @@ export function List(
             description: 'Select options of mongoose',
           },
           skip: {
-            type: 'number',
+            type: 'integer',
             description: 'Mongoose skip property',
           },
           limit: {
-            type: 'number',
+            type: 'integer',
             description: 'Mongoose limit property',
           },
           p: {
-            type: 'number',
+            type: 'integer',
             description: 'Pagenumber property',
           },
           pageSize: {
-            type: 'number',
+            type: 'integer',
             description: 'PageSize property',
           },
           totalCount: {
@@ -84,24 +91,7 @@ export function List(
       },
       response,
     },
-    handler: async (
-      request: FastifyRequest<{
-        Querystring: {
-          query?: string;
-          q?: string;
-          populate?: string;
-          projection?: string;
-          sort?: string;
-          select?: string;
-          skip?: number;
-          limit?: number;
-          p?: number;
-          pageSize?: number;
-          totalCount?: boolean;
-        };
-      }>,
-      reply: FastifyReply
-    ) => {
+    handler: async (request, reply) => {
       const {
         query,
         q,

@@ -1,37 +1,38 @@
-import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {FastifyReply, FastifyRequest} from 'fastify';
 import {Model} from 'mongoose';
 import {FastifyMongooseRestOptions} from '../types';
 import {createResponseSchema} from '../utils';
 
-export function Create(
+export function Create<T>(
   basePath: string,
-  model: Model<any>,
+  model: Model<T>,
   options?: FastifyMongooseRestOptions
 ): {
-  method: HTTPMethods;
+  method: 'POST';
   url: string;
   schema: {
     summary: string;
-    tags: string[];
+    tags?: string[];
     body: object;
     response: object;
   };
-  handler: any;
+  handler: (request: FastifyRequest, reply: FastifyReply) => Promise<any>;
 } {
-  let response: Record<number, any> = {};
-  let body: Record<string, any> = {type: 'object'};
+  const {tags, validationSchema} = options || {};
 
-  if (options?.validationSchema) {
+  let response: Record<number, unknown> = {};
+  let body: any = {type: 'object'};
+
+  if (validationSchema) {
     body = {
       type: 'object',
       properties: {
-        ...options.validationSchema,
+        ...validationSchema,
       },
     };
 
     delete body.properties._id;
-
-    response = createResponseSchema(options.validationSchema, 'object');
+    response = createResponseSchema(validationSchema, 'object');
   }
 
   return {
@@ -39,16 +40,11 @@ export function Create(
     url: basePath,
     schema: {
       summary: `Create a new ${model.modelName} resource`,
-      tags: options?.tags || [],
+      tags,
       body,
       response,
     },
-    handler: async (
-      request: FastifyRequest<{
-        Body: unknown;
-      }>,
-      reply: FastifyReply
-    ) => {
+    handler: async (request, reply) => {
       const resource = await model.create(request.body);
       return reply.send(resource);
     },

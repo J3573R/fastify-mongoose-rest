@@ -14,3 +14,27 @@ export interface FastifyMongooseRestOptions {
    */
   findProperty?: string;
 }
+
+export interface FindOptions {
+  query?: object | string;
+  q?: object | string;
+  populate?: object | string;
+  projection?: object | string;
+  sort?: object | string;
+  select?: object | string;
+  skip?: number;
+  limit?: number;
+  p?: number;
+  page?: number;
+  pageSize?: number;
+  totalCount?: boolean;
+}
+
+export interface FindQueryOptions extends FindOptions {
+  query?: string;
+  q?: string;
+  populate?: string;
+  projection?: string;
+  sort?: string;
+  select?: string;
+}

@@ -28,7 +28,7 @@ import {addSlashToPath} from './utils';
  * const fastifyMongooseRest = FastifyMongooseRest('/cats', Cat);
  * ```
  */
-export default function FastifyMongooseRest<T = unknown>(
+export default function FastifyMongooseRest<T>(
   basePath: string,
   model: Model<T>,
   options?: FastifyMongooseRestOptions

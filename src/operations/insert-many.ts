@@ -1,38 +1,45 @@
-import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {FastifyReply, FastifyRequest} from 'fastify';
 import {Model} from 'mongoose';
 import {FastifyMongooseRestOptions} from '../types';
 import {createResponseSchema} from '../utils';
 
-export function InsertMany(
+export function InsertMany<T>(
   basePath: string,
-  model: Model<any>,
+  model: Model<T>,
   options?: FastifyMongooseRestOptions
 ): {
-  method: HTTPMethods;
+  method: 'POST';
   url: string;
   schema: {
     summary: string;
-    tags: string[];
+    tags?: string[];
     body: object[];
     response: object;
   };
-  handler: any;
+  handler: (
+    request: FastifyRequest<{
+      Body: object[];
+    }>,
+    reply: FastifyReply
+  ) => Promise<any>;
 } {
-  let response: Record<number, any> = {};
-  let body: any;
+  const {tags, validationSchema} = options || {};
 
-  if (options?.validationSchema) {
+  let response: Record<number, unknown> = {};
+  let body: any = {type: 'array'};
+
+  if (validationSchema) {
     body = {
       type: 'array',
       items: {
         type: 'object',
         properties: {
-          ...options.validationSchema,
+          ...validationSchema,
         },
       },
     };
 
-    response = createResponseSchema(options.validationSchema, 'array');
+    response = createResponseSchema(validationSchema, 'array');
   }
 
   return {
@@ -40,18 +47,13 @@ export function InsertMany(
     url: `${basePath}/insert-many`,
     schema: {
       summary: `Create multiple new ${model.modelName} resources`,
-      tags: options?.tags || [],
+      tags,
       body,
       response,
     },
-    handler: async (
-      request: FastifyRequest<{
-        Body: object[];
-      }>,
-      reply: FastifyReply
-    ) => {
-      const resource = await model.insertMany(request.body);
-      return reply.send(resource);
+    handler: async (request, reply) => {
+      const resources = await model.insertMany(request.body);
+      return reply.send(resources);
     },
   };
 }
