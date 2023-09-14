@@ -6,7 +6,7 @@ import {createResponseSchema} from '../utils';
 export function InsertMany<T>(
   basePath: string,
   model: Model<T>,
-  options?: FastifyMongooseRestOptions
+  options: FastifyMongooseRestOptions
 ): {
   method: 'POST';
   url: string;
@@ -23,7 +23,7 @@ export function InsertMany<T>(
     reply: FastifyReply
   ) => Promise<any>;
 } {
-  const {tags, validationSchema} = options || {};
+  const {tags, validationSchema} = options;
 
   let response: Record<number, unknown> = {};
   let body: any = {type: 'array'};

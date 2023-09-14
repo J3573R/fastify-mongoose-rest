@@ -31,7 +31,7 @@ import {addSlashToPath} from './utils';
 export default function FastifyMongooseRest<T>(
   basePath: string,
   model: Model<T>,
-  options?: FastifyMongooseRestOptions
+  options: FastifyMongooseRestOptions = {}
 ) {
   const newBasePath = addSlashToPath(basePath);
   return {

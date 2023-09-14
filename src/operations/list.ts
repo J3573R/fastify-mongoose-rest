@@ -6,7 +6,7 @@ import {createResponseSchema, findOperation} from '../utils';
 export function List<T>(
   basePath: string,
   model: Model<T>,
-  options?: FastifyMongooseRestOptions
+  options: FastifyMongooseRestOptions
 ): {
   method: 'GET';
   url: string;
@@ -23,7 +23,7 @@ export function List<T>(
     reply: FastifyReply
   ) => Promise<any>;
 } {
-  const {tags, validationSchema} = options || {};
+  const {tags, validationSchema} = options;
 
   let response = {};
   if (validationSchema) {

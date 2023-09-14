@@ -6,7 +6,7 @@ import {createResponseSchema, parseInput} from '../utils';
 export function Details<T>(
   basePath: string,
   model: Model<T>,
-  options?: FastifyMongooseRestOptions
+  options: FastifyMongooseRestOptions
 ): {
   method: 'GET';
   url: string;
@@ -31,7 +31,7 @@ export function Details<T>(
     reply: FastifyReply
   ) => Promise<any>;
 } {
-  const {tags, findProperty, validationSchema} = options || {};
+  const {tags, findProperty, validationSchema} = options;
 
   let response = {};
   if (validationSchema) {

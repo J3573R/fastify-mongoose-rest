@@ -6,7 +6,7 @@ import {createResponseSchema, updatePropertiesRecursive} from '../utils';
 export function Modify<T>(
   basePath: string,
   model: Model<T>,
-  options?: FastifyMongooseRestOptions
+  options: FastifyMongooseRestOptions
 ): {
   method: 'PATCH';
   url: string;
@@ -27,7 +27,7 @@ export function Modify<T>(
     reply: FastifyReply
   ) => Promise<any>;
 } {
-  const {tags, validationSchema, findProperty} = options || {};
+  const {tags, validationSchema, findProperty} = options;
 
   let body: any = {type: 'object'};
   let response = {};

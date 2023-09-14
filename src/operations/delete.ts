@@ -5,7 +5,7 @@ import {FastifyMongooseRestOptions} from '../types';
 export function Delete<T>(
   basePath: string,
   model: Model<T>,
-  options?: FastifyMongooseRestOptions
+  options: FastifyMongooseRestOptions
 ): {
   method: 'DELETE';
   url: string;
@@ -51,7 +51,7 @@ export function Delete<T>(
     },
   };
 
-  const {tags, findProperty} = options || {};
+  const {tags, findProperty} = options;
   return {
     method: 'DELETE',
     url: `${basePath}/:id`,

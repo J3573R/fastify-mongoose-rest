@@ -6,7 +6,7 @@ import {createResponseSchema, findOperation} from '../utils';
 export function Search<T>(
   basePath: string,
   model: Model<T>,
-  options?: FastifyMongooseRestOptions
+  options: FastifyMongooseRestOptions
 ): {
   method: 'POST';
   url: string;
@@ -23,7 +23,7 @@ export function Search<T>(
     reply: FastifyReply
   ) => Promise<any>;
 } {
-  const {tags, validationSchema} = options || {};
+  const {tags, validationSchema} = options;
 
   let body: any = {type: 'array'};
   let response = {};

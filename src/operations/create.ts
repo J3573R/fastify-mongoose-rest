@@ -6,7 +6,7 @@ import {createResponseSchema} from '../utils';
 export function Create<T>(
   basePath: string,
   model: Model<T>,
-  options?: FastifyMongooseRestOptions
+  options: FastifyMongooseRestOptions
 ): {
   method: 'POST';
   url: string;
@@ -18,7 +18,7 @@ export function Create<T>(
   };
   handler: (request: FastifyRequest, reply: FastifyReply) => Promise<any>;
 } {
-  const {tags, validationSchema} = options || {};
+  const {tags, validationSchema} = options;
 
   let response: Record<number, unknown> = {};
   let body: any = {type: 'object'};
