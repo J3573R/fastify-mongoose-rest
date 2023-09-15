@@ -73,7 +73,11 @@ export function List<T>(
           },
           p: {
             type: 'integer',
-            description: 'Pagenumber property',
+            description: 'Page number property',
+          },
+          page: {
+            type: 'integer',
+            description: 'Page number property',
           },
           pageSize: {
             type: 'integer',
