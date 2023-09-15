@@ -144,16 +144,16 @@ export async function findOperation<T>(model: Model<T>, options: FindOptions) {
     operation.select(parseInput(select));
   }
 
-  if (page || p || pageSize) {
+  if (page !== undefined || p !== undefined || pageSize !== undefined) {
     const calculation = calculateSkipAndLimit(page || p, pageSize);
     operation.skip(calculation.skip);
     operation.limit(calculation.limit);
   } else {
-    if (skip) {
+    if (skip !== undefined && skip > 0) {
       operation.skip(skip);
     }
 
-    if (limit) {
+    if (limit !== undefined && limit > 0) {
       operation.limit(limit);
     }
   }
