@@ -1,5 +1,9 @@
 import TestSetup from './util/setup';
-import {createMockPerson, createMultipleMockCats} from './util/mock-data';
+import {
+  createMockPerson,
+  createMultipleMockCats,
+  createMultipleMockDogs,
+} from './util/mock-data';
 import supertest from 'supertest';
 
 describe('list', () => {
@@ -30,6 +34,10 @@ describe('list', () => {
 
     for (const person of people) {
       await createMultipleMockCats(5, person._id);
+    }
+
+    for (const person of people) {
+      await createMultipleMockDogs(5, person._id);
     }
   });
 
@@ -138,6 +146,32 @@ describe('list', () => {
         last: 'e',
         property: {
           'cats.length': 5,
+        },
+      },
+    ],
+    [
+      'should populate information to returned documents from comma separated',
+      {populate: 'cats,dogs'},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          'cats.length': 5,
+          'dogs.length': 5,
+        },
+      },
+    ],
+    [
+      'should populate information to returned documents from space separated',
+      {populate: 'cats dogs'},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          'cats.length': 5,
+          'dogs.length': 5,
         },
       },
     ],

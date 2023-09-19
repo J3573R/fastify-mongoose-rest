@@ -16,6 +16,12 @@ export interface Cat {
   owner: Person | Types.ObjectId;
 }
 
+export interface Dog {
+  name: string;
+  age: number;
+  owner: Person | Types.ObjectId;
+}
+
 export interface User {
   name: string;
   userId: string;
@@ -46,7 +52,19 @@ personSchema.virtual('cats', {
   foreignField: 'owner',
 });
 
+personSchema.virtual('dogs', {
+  ref: 'Dog',
+  localField: '_id',
+  foreignField: 'owner',
+});
+
 const catSchema = new Schema<Cat>({
+  name: {type: String, required: true},
+  age: {type: Number, required: true},
+  owner: {type: Schema.Types.ObjectId, ref: 'Person'},
+});
+
+const dogSchema = new Schema<Dog>({
   name: {type: String, required: true},
   age: {type: Number, required: true},
   owner: {type: Schema.Types.ObjectId, ref: 'Person'},
@@ -59,6 +77,7 @@ const userSchema = new Schema<User>({
 
 const PersonModel = model<Person>('Person', personSchema);
 const CatModel = model<Cat>('Cat', catSchema);
+const DogModel = model<Dog>('Dog', dogSchema, 'dogs');
 const UserModel = model<User>('User', userSchema);
 
 const PersonValidationSchema = {
@@ -73,6 +92,7 @@ const PersonValidationSchema = {
   },
   name: {type: 'string'},
   cats: {type: ['array', 'null'], items: {}},
+  dogs: {type: ['array', 'null'], items: {}},
 };
 
 const CatValidationSchema = {
@@ -94,6 +114,7 @@ const UserValidationSchema = {
 export {
   PersonModel,
   CatModel,
+  DogModel,
   UserModel,
   PersonValidationSchema,
   CatValidationSchema,

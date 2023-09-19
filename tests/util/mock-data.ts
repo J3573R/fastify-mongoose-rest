@@ -1,5 +1,14 @@
 import {faker} from '@faker-js/faker';
-import {User, UserModel, Person, PersonModel, Cat, CatModel} from './models';
+import {
+  User,
+  UserModel,
+  Person,
+  PersonModel,
+  Cat,
+  CatModel,
+  Dog,
+  DogModel,
+} from './models';
 import {Types} from 'mongoose';
 
 const mockUser = (overrides: Partial<User> = {}): User => ({
@@ -50,4 +59,22 @@ export const createMultipleMockCats = async (
   owner?: Types.ObjectId
 ) => {
   return Promise.all([...Array(count)].map(() => createMockCat({owner})));
+};
+
+const mockDog = (overrides: Partial<Dog> = {}): Dog => ({
+  name: faker.person.firstName(),
+  age: faker.number.int({min: 1, max: 20}),
+  owner: new Types.ObjectId(),
+  ...overrides,
+});
+
+export const createMockDog = async (overrides: Partial<Dog> = {}) => {
+  return DogModel.create(mockDog(overrides));
+};
+
+export const createMultipleMockDogs = async (
+  count: number,
+  owner?: Types.ObjectId
+) => {
+  return Promise.all([...Array(count)].map(() => createMockDog({owner})));
 };
