@@ -11,7 +11,7 @@
     "fix": "gts fix",
     "test": "jest --coverage --verbose --silent",
     "precompile": "npm run clean",
-    "pretest": "npm run lint && npm run compile -- --noEmit",
+    "pretest": "npm run lint",
     "prepublishOnly": "npm run test",
     "prepare": "npm run compile"
   },
