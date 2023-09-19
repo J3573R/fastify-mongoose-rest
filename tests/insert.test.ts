@@ -1,20 +1,13 @@
-import {SuperAgentTest} from 'supertest';
 import TestSetup from './util/setup';
 import {mockPerson} from './util/mock-data';
 import {Person} from './util/models';
+import supertest from 'supertest';
 
 describe('Insert many', () => {
-  const testSetup = new TestSetup();
-  let request: SuperAgentTest;
+  let request: supertest.SuperTest<supertest.Test>;
 
   beforeAll(async () => {
-    request = await testSetup.init();
-  });
-  afterEach(async () => {
-    await testSetup.clear();
-  });
-  afterAll(async () => {
-    await testSetup.reset();
+    request = await TestSetup();
   });
 
   it('Should create new documents', async () => {

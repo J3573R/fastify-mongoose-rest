@@ -1,6 +1,4 @@
 import fastify from 'fastify';
-import {MongoMemoryServer} from 'mongodb-memory-server';
-import Mongoose from 'mongoose';
 import supertest from 'supertest';
 import FastifyMongooseRest from '../../src/index';
 import {
@@ -11,77 +9,53 @@ import {
   UserModel,
   UserValidationSchema,
 } from './models';
-import mongoose from 'mongoose';
 
-export default class TestSetup {
-  public mongod!: MongoMemoryServer;
+export default async () => {
+  const app = fastify();
 
-  async init() {
-    const app = fastify();
+  const personRoutes = FastifyMongooseRest('persons', PersonModel, {
+    validationSchema: PersonValidationSchema,
+  });
 
-    app.setErrorHandler((error, request, reply) => {
-      console.error(error);
-      reply.send(error);
-    });
+  const catRoutes = FastifyMongooseRest('cats', CatModel, {
+    validationSchema: CatValidationSchema,
+  });
 
-    this.mongod = await MongoMemoryServer.create();
-    const mongodUri = await this.mongod.getUri();
+  const userRoutes = FastifyMongooseRest('users', UserModel, {
+    validationSchema: UserValidationSchema,
+    findProperty: 'userId',
+  });
 
-    await Mongoose.connect(mongodUri);
+  // This is just to test the default value of options and slash at the start generation
+  const users2Routes = FastifyMongooseRest('/users2', UserModel);
 
-    const personRoutes = FastifyMongooseRest('persons', PersonModel, {
-      validationSchema: PersonValidationSchema,
-    });
+  app.route(personRoutes.create);
+  app.route(personRoutes.delete);
+  app.route(personRoutes.details);
+  app.route(personRoutes.list);
+  app.route(personRoutes.modify);
+  app.route(personRoutes.search);
+  app.route(personRoutes.insertMany);
 
-    const catRoutes = FastifyMongooseRest('cats', CatModel, {
-      validationSchema: CatValidationSchema,
-    });
+  app.route(catRoutes.create);
+  app.route(catRoutes.delete);
+  app.route(catRoutes.details);
+  app.route(catRoutes.list);
+  app.route(catRoutes.modify);
+  app.route(catRoutes.search);
+  app.route(catRoutes.insertMany);
 
-    const userRoutes = FastifyMongooseRest('users', UserModel, {
-      validationSchema: UserValidationSchema,
-      findProperty: 'userId',
-    });
+  app.route(userRoutes.create);
+  app.route(userRoutes.delete);
+  app.route(userRoutes.details);
+  app.route(userRoutes.list);
+  app.route(userRoutes.modify);
+  app.route(userRoutes.search);
+  app.route(userRoutes.insertMany);
 
-    // This is just to test the default value of options and slash at the start generation
-    const users2Routes = FastifyMongooseRest('/users2', UserModel);
+  app.route(users2Routes.create);
 
-    app.route(personRoutes.create);
-    app.route(personRoutes.delete);
-    app.route(personRoutes.details);
-    app.route(personRoutes.list);
-    app.route(personRoutes.modify);
-    app.route(personRoutes.search);
-    app.route(personRoutes.insertMany);
+  await app.ready();
 
-    app.route(catRoutes.create);
-    app.route(catRoutes.delete);
-    app.route(catRoutes.details);
-    app.route(catRoutes.list);
-    app.route(catRoutes.modify);
-    app.route(catRoutes.search);
-    app.route(catRoutes.insertMany);
-
-    app.route(userRoutes.create);
-    app.route(userRoutes.delete);
-    app.route(userRoutes.details);
-    app.route(userRoutes.list);
-    app.route(userRoutes.modify);
-    app.route(userRoutes.search);
-    app.route(userRoutes.insertMany);
-
-    app.route(users2Routes.create);
-
-    await app.ready();
-
-    return supertest.agent(app.server);
-  }
-
-  async clear() {
-    await mongoose.connection.db.dropDatabase();
-  }
-
-  async reset() {
-    await Mongoose.disconnect();
-    await this.mongod.stop();
-  }
-}
+  return supertest(app.server);
+};

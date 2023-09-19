@@ -1,21 +1,14 @@
-import {SuperAgentTest} from 'supertest';
 import TestSetup from './util/setup';
 import {createMockPerson, createMockUser} from './util/mock-data';
 import {faker} from '@faker-js/faker';
 import {Types} from 'mongoose';
+import supertest from 'supertest';
 
 describe('Modify', () => {
-  const testSetup = new TestSetup();
-  let request: SuperAgentTest;
+  let request: supertest.SuperTest<supertest.Test>;
 
   beforeAll(async () => {
-    request = await testSetup.init();
-  });
-  afterEach(async () => {
-    await testSetup.clear();
-  });
-  afterAll(async () => {
-    await testSetup.reset();
+    request = await TestSetup();
   });
 
   it('should modify existing document', async () => {

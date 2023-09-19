@@ -1,4 +1,3 @@
-import {SuperAgentTest} from 'supertest';
 import {faker} from '@faker-js/faker';
 import TestSetup from './util/setup';
 import mongoose from 'mongoose';
@@ -8,19 +7,13 @@ import {
   createMultipleMockCats,
   createMultipleMockUsers,
 } from './util/mock-data';
+import supertest from 'supertest';
 
 describe('details', () => {
-  const testSetup = new TestSetup();
-  let request: SuperAgentTest;
+  let request: supertest.SuperTest<supertest.Test>;
 
   beforeAll(async () => {
-    request = await testSetup.init();
-  });
-  afterEach(async () => {
-    await testSetup.clear();
-  });
-  afterAll(async () => {
-    await testSetup.reset();
+    request = await TestSetup();
   });
 
   it('should return document', async () => {

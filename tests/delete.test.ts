@@ -1,4 +1,3 @@
-import {SuperAgentTest} from 'supertest';
 import TestSetup from './util/setup';
 import {PersonModel, UserModel} from './util/models';
 import {
@@ -6,19 +5,13 @@ import {
   createMultipleMockUsers,
 } from './util/mock-data';
 import {Types} from 'mongoose';
+import supertest from 'supertest';
 
 describe('Delete', () => {
-  const testSetup = new TestSetup();
-  let request: SuperAgentTest;
+  let request: supertest.SuperTest<supertest.Test>;
 
   beforeAll(async () => {
-    request = await testSetup.init();
-  });
-  afterEach(async () => {
-    await testSetup.clear();
-  });
-  afterAll(async () => {
-    await testSetup.reset();
+    request = await TestSetup();
   });
 
   it('should delete a document', async () => {

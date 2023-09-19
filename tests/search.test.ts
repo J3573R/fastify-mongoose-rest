@@ -1,14 +1,14 @@
-import {SuperAgentTest} from 'supertest';
 import TestSetup from './util/setup';
 import {createMockPerson, createMultipleMockCats} from './util/mock-data';
+import supertest from 'supertest';
 
 describe('search', () => {
-  const testSetup = new TestSetup();
-  let request: SuperAgentTest;
+  let request: supertest.SuperTest<supertest.Test>;
 
   beforeAll(async () => {
-    request = await testSetup.init();
+    request = await TestSetup();
   });
+
   beforeEach(async () => {
     const people = [
       await createMockPerson({
@@ -31,12 +31,6 @@ describe('search', () => {
     for (const person of people) {
       await createMultipleMockCats(5, person._id);
     }
-  });
-  afterEach(async () => {
-    await testSetup.clear();
-  });
-  afterAll(async () => {
-    await testSetup.reset();
   });
 
   const searchTests: [

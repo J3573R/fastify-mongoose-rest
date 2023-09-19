@@ -1,19 +1,12 @@
-import {SuperAgentTest} from 'supertest';
 import {faker} from '@faker-js/faker';
 import TestSetup from './util/setup';
+import supertest from 'supertest';
 
 describe('Create', () => {
-  const testSetup = new TestSetup();
-  let request: SuperAgentTest;
+  let request: supertest.SuperTest<supertest.Test>;
 
   beforeAll(async () => {
-    request = await testSetup.init();
-  });
-  afterEach(async () => {
-    await testSetup.clear();
-  });
-  afterAll(async () => {
-    await testSetup.reset();
+    request = await TestSetup();
   });
 
   it('should create new document', async () => {
