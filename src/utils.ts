@@ -129,7 +129,12 @@ export async function findOperation<T>(model: Model<T>, options: FindOptions) {
   const operation = model.find(parseInput(query || q || {}));
 
   if (populate) {
-    operation.populate(parseInput(populate));
+    const _populate = parseInput(populate);
+    if (Array.isArray(_populate)) {
+      _populate.forEach(pop => operation.populate(pop));
+    } else {
+      operation.populate(_populate);
+    }
   }
 
   if (projection) {

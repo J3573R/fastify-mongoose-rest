@@ -13,6 +13,11 @@ import {
 export default async () => {
   const app = fastify();
 
+  app.setErrorHandler((error, _, reply) => {
+    console.error(error);
+    reply.send(error);
+  });
+
   const personRoutes = FastifyMongooseRest('persons', PersonModel, {
     validationSchema: PersonValidationSchema,
   });

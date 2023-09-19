@@ -32,7 +32,7 @@ export interface FindOptions {
   /**
    * Populate for mongoose
    */
-  populate?: object | string;
+  populate?: object | string | object[];
   /**
    * Projection for mongoose
    */

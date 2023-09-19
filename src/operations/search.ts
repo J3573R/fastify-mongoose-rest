@@ -57,7 +57,7 @@ export function Search<T>(
             description: 'Mongoose find query',
           },
           populate: {
-            type: ['object', 'string'],
+            type: ['object', 'string', 'array'],
             description: 'Population options of mongoose',
           },
           projection: {

@@ -188,6 +188,19 @@ describe('list', () => {
       },
     ],
     [
+      'should populate information to returned documents from array',
+      {populate: JSON.stringify([{path: 'cats'}, {path: 'dogs'}])},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          'cats.length': 5,
+          'dogs.length': 5,
+        },
+      },
+    ],
+    [
       'should sort returned documents',
       {sort: '-name motto'},
       {
