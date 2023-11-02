@@ -1,38 +1,41 @@
-import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {FastifyReply, FastifyRequest} from 'fastify';
 import {Model} from 'mongoose';
-import {FastifyMongooseRestOptions} from '..';
-import {
-  calculateSkipAndLimit,
-  createResponseSchema,
-  parseInput,
-} from '../helpers';
+import {FastifyMongooseRestOptions, FindQueryOptions} from '../types';
+import {createResponseSchema, findOperation} from '../utils';
 
-export default function List(
-  name: string,
-  model: Model<any>,
-  options?: FastifyMongooseRestOptions
+export function List<T>(
+  basePath: string,
+  model: Model<T>,
+  options: FastifyMongooseRestOptions
 ): {
-  method: HTTPMethods;
+  method: 'GET';
   url: string;
   schema: {
     summary: string;
-    tags: string[];
+    tags?: string[];
     querystring: object;
     response: object;
   };
-  handler: any;
+  handler: (
+    request: FastifyRequest<{
+      Querystring: FindQueryOptions;
+    }>,
+    reply: FastifyReply
+  ) => Promise<any>;
 } {
+  const {tags, validationSchema} = options;
+
   let response = {};
-  if (options?.validationSchema) {
-    response = createResponseSchema(options.validationSchema, 'array');
+  if (validationSchema) {
+    response = createResponseSchema(validationSchema, 'array');
   }
 
   return {
     method: 'GET',
-    url: `/${name}`,
+    url: `${basePath}`,
     schema: {
-      summary: `List ${name}`,
-      tags: options?.tags || [],
+      summary: `List ${model.modelName} resources`,
+      tags,
       querystring: {
         type: 'object',
         properties: {
@@ -61,19 +64,23 @@ export default function List(
             description: 'Select options of mongoose',
           },
           skip: {
-            type: 'number',
+            type: 'integer',
             description: 'Mongoose skip property',
           },
           limit: {
-            type: 'number',
+            type: 'integer',
             description: 'Mongoose limit property',
           },
           p: {
-            type: 'number',
-            description: 'Pagenumber property',
+            type: 'integer',
+            description: 'Page number property',
+          },
+          page: {
+            type: 'integer',
+            description: 'Page number property',
           },
           pageSize: {
-            type: 'number',
+            type: 'integer',
             description: 'PageSize property',
           },
           totalCount: {
@@ -84,85 +91,14 @@ export default function List(
       },
       response,
     },
-    handler: async (
-      request: FastifyRequest<{
-        Querystring: {
-          query?: string;
-          q?: string;
-          populate?: string;
-          projection?: string;
-          sort?: string;
-          select?: string;
-          skip?: number;
-          limit?: number;
-          p?: number;
-          pageSize?: number;
-          totalCount?: boolean;
-        };
-      }>,
-      reply: FastifyReply
-    ) => {
-      const {
-        query,
-        q,
-        populate,
-        projection,
-        sort,
-        select,
-        skip,
-        limit,
-        p,
-        pageSize,
-        totalCount,
-      } = request.query;
+    handler: async (request, reply) => {
+      const {resources, totalCount} = await findOperation(model, request.query);
 
-      let qs: object = {};
-      if (query) {
-        qs = JSON.parse(query);
-      } else if (q) {
-        qs = JSON.parse(q);
+      if (totalCount) {
+        reply.header('X-Total-Count', totalCount);
       }
 
-      const operation = model.find(qs);
-
-      if (populate) {
-        operation.populate(parseInput(populate));
-      }
-
-      if (projection) {
-        operation.projection(parseInput(projection));
-      }
-
-      if (sort) {
-        operation.sort(parseInput(sort));
-      }
-
-      if (select) {
-        operation.select(parseInput(select));
-      }
-
-      if (skip) {
-        operation.skip(skip);
-      }
-
-      if (limit) {
-        operation.limit(limit);
-      }
-
-      if (p || pageSize) {
-        const {skip, limit} = calculateSkipAndLimit(p, pageSize);
-        operation.skip(skip);
-        operation.limit(limit);
-      }
-
-      const resource = await operation.exec();
-
-      if (totalCount === true) {
-        const operationCount = await model.find(qs).countDocuments();
-        reply.header('X-Total-Count', operationCount);
-      }
-
-      return reply.send(resource);
+      return reply.send(resources);
     },
   };
 }

@@ -1,44 +1,54 @@
-import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {FastifyReply, FastifyRequest} from 'fastify';
 import {Model} from 'mongoose';
-import {FastifyMongooseRestOptions} from '..';
-import {createResponseSchema, updatePropertiesRecursive} from '../helpers';
+import {FastifyMongooseRestOptions} from '../types';
+import {createResponseSchema, updatePropertiesRecursive} from '../utils';
 
-export default function Modify(
-  name: string,
-  model: Model<any>,
-  options?: FastifyMongooseRestOptions
+export function Modify<T>(
+  basePath: string,
+  model: Model<T>,
+  options: FastifyMongooseRestOptions
 ): {
-  method: HTTPMethods;
+  method: 'PATCH';
   url: string;
   schema: {
     summary: string;
-    tags: string[];
+    tags?: string[];
     params: object;
     body: object;
     response: object;
   };
-  handler: any;
+  handler: (
+    request: FastifyRequest<{
+      Params: {
+        id: string;
+      };
+      Body: {[index: string]: any};
+    }>,
+    reply: FastifyReply
+  ) => Promise<any>;
 } {
+  const {tags, validationSchema, findProperty} = options;
+
   let body: any = {type: 'object'};
   let response = {};
 
-  if (options?.validationSchema) {
+  if (validationSchema) {
     body = {
       type: 'object',
       properties: {
-        ...options.validationSchema,
+        ...validationSchema,
       },
     };
     delete body.properties._id;
-    response = createResponseSchema(options.validationSchema, 'object');
+    response = createResponseSchema(validationSchema, 'object');
   }
 
   return {
     method: 'PATCH',
-    url: `/${name}/:id`,
+    url: `${basePath}/:id`,
     schema: {
-      summary: `Modify existing ${name}`,
-      tags: options?.tags || [],
+      summary: `Modify a existing ${model.modelName} resource`,
+      tags,
       params: {
         type: 'object',
         properties: {
@@ -48,21 +58,17 @@ export default function Modify(
       body,
       response,
     },
-    handler: async (
-      request: FastifyRequest<{
-        Params: {
-          id: string;
-        };
-        Body: {[index: string]: any};
-      }>,
-      reply: FastifyReply
-    ) => {
-      const findQuery: {[name: string]: string} = {};
-      findQuery[options?.findProperty || '_id'] = request.params.id;
+    handler: async (request, reply) => {
+      const query = {
+        [findProperty || '_id']: request.params.id,
+      } as any;
 
-      let resource = await model.findOne(findQuery);
+      let resource = await model.findOne(query).exec();
+      if (!resource) {
+        return reply.code(404).send(new Error('Resource not found'));
+      }
       resource = updatePropertiesRecursive(resource, request.body);
-      await model.updateOne(findQuery, {$set: resource});
+      await model.updateOne(query, {$set: resource as any});
 
       return reply.send(resource);
     },

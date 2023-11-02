@@ -1,318 +1,416 @@
-import {SuperAgentTest} from 'supertest';
-import {faker} from '@faker-js/faker';
 import TestSetup from './util/setup';
-import {CatModel, PersonModel} from './util/models';
+import {
+  createMockPerson,
+  createMultipleMockCats,
+  createMultipleMockDogs,
+} from './util/mock-data';
+import supertest from 'supertest';
 
 describe('list', () => {
-  const testSetup = new TestSetup();
-  let request: SuperAgentTest;
+  let request: supertest.SuperTest<supertest.Test>;
+
+  beforeAll(async () => {
+    request = await TestSetup();
+  });
 
   beforeEach(async () => {
-    request = await testSetup.init();
-  });
+    const people = [
+      await createMockPerson({
+        name: 'a',
+      }),
+      await createMockPerson({
+        name: 'b',
+      }),
+      await createMockPerson({
+        name: 'c',
+      }),
+      await createMockPerson({
+        name: 'd',
+      }),
+      await createMockPerson({
+        name: 'e',
+      }),
+    ];
 
-  afterEach(async () => {
-    await testSetup.reset();
-  });
-
-  it('should return list of documents', async () => {
-    const personCount = faker.number.int({min: 1, max: 10});
-    for (let i = 0; i < personCount; i++) {
-      await PersonModel.create({name: faker.person.fullName()});
+    for (const person of people) {
+      await createMultipleMockCats(5, person._id);
     }
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .then(({body}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(personCount);
-      });
-  });
 
-  it('should return list of documents with skip and limit', async () => {
-    for (let i = 0; i <= 2; i++) {
-      await PersonModel.create({name: faker.person.fullName()});
+    for (const person of people) {
+      await createMultipleMockDogs(5, person._id);
     }
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({skip: 1, limit: 5})
-      .then(({body}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(2);
-      });
   });
 
-  it('should return specific list of documents with "query" filter', async () => {
-    const person = await PersonModel.create({name: 'asd'});
-    await PersonModel.create({name: 'qwe'});
-
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({query: JSON.stringify({name: 'asd'})})
-      .then(({body}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(1);
-        expect(body[0].name).toEqual(person.name);
-      });
-  });
-
-  it('should return specific list of documents with "q" filter', async () => {
-    const person = await PersonModel.create({name: 'asd'});
-    await PersonModel.create({name: 'qwe'});
-
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({q: JSON.stringify({name: 'asd'})})
-      .then(({body}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(1);
-        expect(body[0].name).toEqual(person.name);
-      });
-  });
-
-  it('should populate information to returned documents', async () => {
-    const catCount = faker.number.int({min: 1, max: 10});
-    const cats = [];
-    for (let i = 0; i < catCount; i++) {
-      const {_id} = await CatModel.create({
-        name: faker.person.fullName(),
-        age: faker.number.int({min: 1, max: 20}),
-      });
-      cats.push(_id);
-    }
-    await PersonModel.create({name: 'asd', cats});
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({populate: 'cats'})
-      .then(({body}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(1);
-        expect(Array.isArray(body[0].cats)).toEqual(true);
-        expect(body[0].cats.length).toEqual(catCount);
-      });
-  });
-
-  it('should sort returned documents', async () => {
-    await PersonModel.create({name: 'a'});
-    await PersonModel.create({name: 'b'});
-    await PersonModel.create({name: 'c'});
-
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({sort: 'name'})
-      .then(({body}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(3);
-        expect(body[0].name).toEqual('a');
-        expect(body[1].name).toEqual('b');
-        expect(body[2].name).toEqual('c');
-      });
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({sort: '-name'})
-      .then(({body}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(3);
-        expect(body[2].name).toEqual('a');
-        expect(body[1].name).toEqual('b');
-        expect(body[0].name).toEqual('c');
-      });
-  });
-
-  it('should return header X-Total-Count with total count of documents if totalCount paremeter is true', async () => {
-    for (let i = 0; i < 10; i++) {
-      await PersonModel.create({name: faker.person.fullName()});
-    }
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({skip: 0, limit: 5, totalCount: true})
-      .then(({body, header}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(5);
-        expect(header['x-total-count']).toEqual('10');
-      });
-  });
-
-  it('should not return header X-Total-Count if totalCount parameter is not present', async () => {
-    for (let i = 0; i < 10; i++) {
-      await PersonModel.create({name: faker.person.fullName()});
-    }
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({skip: 0, limit: 5})
-      .then(({body, header}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(5);
-        expect(header['x-total-count']).toBeUndefined();
-      });
-  });
-
-  it('should return only properties defined in projection', async () => {
-    await PersonModel.create({name: faker.person.fullName()});
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({
-        projection: 'name -_id',
-      })
-      .then(({body}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(1);
-        expect(body[0]).toHaveProperty('name');
-        expect(body[0]).not.toHaveProperty('_id');
-      });
-  });
-
-  it('should parse comma separated parameters defined in projection', async () => {
-    await PersonModel.create({name: faker.person.fullName()});
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({
-        projection: 'name,-_id',
-      })
-      .then(({body}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(1);
-        expect(body[0]).toHaveProperty('name');
-        expect(body[0]).not.toHaveProperty('_id');
-      });
-  });
-
-  it('should select what is returned in documents', async () => {
-    await PersonModel.create({name: 'a', motto: faker.lorem.sentence()});
-    await PersonModel.create({name: 'b', motto: faker.lorem.sentence()});
-    await PersonModel.create({name: 'c', motto: faker.lorem.sentence()});
-
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({select: 'name'})
-      .then(({body}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(3);
-        expect(body[0].name).toEqual('a');
-        expect(body[0].motto).toBeUndefined();
-        expect(body[1].name).toEqual('b');
-        expect(body[1].motto).toBeUndefined();
-        expect(body[2].name).toEqual('c');
-        expect(body[2].motto).toBeUndefined();
-      });
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({select: 'motto'})
-      .then(({body}) => {
-        expect(body[0].name).toBeUndefined();
-        expect(body[0].motto).toBeTruthy();
-        expect(body[1].name).toBeUndefined();
-        expect(body[1].motto).toBeTruthy();
-        expect(body[2].name).toBeUndefined();
-        expect(body[2].motto).toBeTruthy();
-      });
-  });
-
-  it('should parse comma separated parameters defined in select', async () => {
-    await PersonModel.create({
-      name: 'a',
-      motto: faker.lorem.sentence(),
-      address: {
-        street: 'Keskuojankatu',
-        city: 'Tampere',
+  const queryTests: [
+    /**
+     * Test description
+     */
+    string,
+    {
+      /**
+       * Query parameters
+       */
+      [key: string]: string | number | boolean;
+    },
+    {
+      /**
+       * Expected results length
+       */
+      length: number;
+      /**
+       * Expected first document name
+       */
+      first: string;
+      /**
+       * Expected last document name
+       */
+      last: string;
+      /**
+       * Expected properties in returned documents
+       */
+      property?: {
+        [key: string]: unknown;
+      };
+      /**
+       * Properties expected not to be in returned documents
+       */
+      notProperty?: string[];
+      /**
+       * Expected headers
+       */
+      headers?: {
+        [key: string]: string | undefined;
+      };
+    },
+  ][] = [
+    [
+      'should return list of documents',
+      {},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
       },
-    });
-    await PersonModel.create({
-      name: 'b',
-      motto: faker.lorem.sentence(),
-      address: {
-        street: 'Mannerheimintie',
-        city: 'Helsinki',
+    ],
+    [
+      'should return list of documents with skip',
+      {skip: 3},
+      {
+        length: 2,
+        first: 'd',
+        last: 'e',
       },
-    });
+    ],
+    [
+      'should return list of documents with limit',
+      {limit: 4},
+      {
+        length: 4,
+        first: 'a',
+        last: 'd',
+      },
+    ],
+    [
+      'should return list of documents with skip and limit',
+      {skip: 2, limit: 2},
+      {
+        length: 2,
+        first: 'c',
+        last: 'd',
+      },
+    ],
+    [
+      'should return specific list of documents with "query" filter',
+      {query: JSON.stringify({name: 'a'})},
+      {
+        length: 1,
+        first: 'a',
+        last: 'a',
+      },
+    ],
+    [
+      'should return specific list of documents with "q" filter',
+      {q: JSON.stringify({name: 'b'})},
+      {
+        length: 1,
+        first: 'b',
+        last: 'b',
+      },
+    ],
+    [
+      'should populate information to returned documents',
+      {populate: 'cats'},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          'cats.length': 5,
+        },
+      },
+    ],
+    [
+      'should populate information to returned documents from comma separated',
+      {populate: 'cats,dogs'},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          'cats.length': 5,
+          'dogs.length': 5,
+        },
+      },
+    ],
+    [
+      'should populate information to returned documents from space separated',
+      {populate: 'cats dogs'},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          'cats.length': 5,
+          'dogs.length': 5,
+        },
+      },
+    ],
+    [
+      'should populate information to returned documents from object',
+      {populate: JSON.stringify({path: 'cats'})},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          'cats.length': 5,
+        },
+      },
+    ],
+    [
+      'should populate information to returned documents from array',
+      {populate: JSON.stringify([{path: 'cats'}, {path: 'dogs'}])},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          'cats.length': 5,
+          'dogs.length': 5,
+        },
+      },
+    ],
+    [
+      'should sort returned documents',
+      {sort: '-name motto'},
+      {
+        length: 5,
+        first: 'e',
+        last: 'a',
+      },
+    ],
+    [
+      'should sort returned documents from comma separated',
+      {sort: '-name,motto'},
+      {
+        length: 5,
+        first: 'e',
+        last: 'a',
+      },
+    ],
+    [
+      'should sort returned documents from object',
+      {sort: JSON.stringify({name: -1, motto: 1})},
+      {
+        length: 5,
+        first: 'e',
+        last: 'a',
+      },
+    ],
+    [
+      'should return header X-Total-Count with total count of documents if totalCount parameter is true',
+      {totalCount: true},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        headers: {
+          'x-total-count': '5',
+        },
+      },
+    ],
+    [
+      'should not return header X-Total-Count if totalCount parameter is not present',
+      {},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        headers: {
+          'x-total-count': undefined,
+        },
+      },
+    ],
+    [
+      'should return only properties defined in projection',
+      {projection: 'name -_id'},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          name: expect.any(String),
+        },
+        notProperty: ['_id'],
+      },
+    ],
+    [
+      'should parse comma separated parameters defined in projection',
+      {projection: 'name,-_id'},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          name: expect.any(String),
+        },
+        notProperty: ['_id'],
+      },
+    ],
+    [
+      'should parse object defined parameters in projection',
+      {projection: JSON.stringify({name: 1, _id: 0})},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          name: expect.any(String),
+        },
+        notProperty: ['_id'],
+      },
+    ],
+    [
+      'should select what is returned in documents',
+      {select: 'name -_id'},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          name: expect.any(String),
+        },
+        notProperty: ['_id', 'motto', 'address'],
+      },
+    ],
+    [
+      'should parse comma separated parameters defined in select',
+      {select: 'name,-_id'},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          name: expect.any(String),
+        },
+        notProperty: ['_id', 'motto', 'address'],
+      },
+    ],
+    [
+      'should parse object defined parameters in select',
+      {select: JSON.stringify({name: 1, _id: 0})},
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+        property: {
+          name: expect.any(String),
+        },
+        notProperty: ['_id', 'motto', 'address'],
+      },
+    ],
+    [
+      'should return amount of documents defined in pageSize and page',
+      {pageSize: 3, page: 1},
+      {
+        length: 2,
+        first: 'd',
+        last: 'e',
+      },
+    ],
+    [
+      'should return amount of documents defined in pageSize and default page 1',
+      {pageSize: 3}, // page defaults to 0
+      {
+        length: 3,
+        first: 'a',
+        last: 'c',
+      },
+    ],
+    [
+      'should return amount of documents defined in pageSize and default page 2',
+      {pageSize: 3, page: -1}, // page defaults to 0 if negative
+      {
+        length: 3,
+        first: 'a',
+        last: 'c',
+      },
+    ],
+    [
+      'should return amount of documents defined in page and default pageSize 1',
+      {page: 0}, // pageSize defaults to 100
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+      },
+    ],
+    [
+      'should return amount of documents defined in page and default pageSize 2',
+      {page: 0, pageSize: 0}, // pageSize defaults to 100 if zero or negative
+      {
+        length: 5,
+        first: 'a',
+        last: 'e',
+      },
+    ],
+  ];
 
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({select: 'name,motto,address.street'})
-      .then(({body}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(2);
-        expect(body[0].name).toEqual('a');
-        expect(body[0].motto).toBeTruthy();
-        expect(body[0].address.street).toEqual('Keskuojankatu');
-        expect(body[0].address.city).toBeUndefined();
-        expect(body[1].name).toEqual('b');
-        expect(body[1].motto).toBeTruthy();
-        expect(body[1].address.street).toEqual('Mannerheimintie');
-        expect(body[1].address.city).toBeUndefined();
-      });
-  });
+  test.each(queryTests)(
+    '%s',
+    async (_, query, {length, first, last, property, notProperty, headers}) => {
+      const {body, header} = await request
+        .get('/persons')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .query(query);
 
-  it('should return amount of documents defined in page and pageSize', async () => {
-    for (let i = 0; i < 10; i++) {
-      await PersonModel.create({name: faker.person.fullName()});
+      expect(Array.isArray(body)).toEqual(true);
+      expect(body.length).toEqual(length);
+      expect(body.at(0).name).toEqual(first);
+      expect(body.at(-1).name).toEqual(last);
+
+      if (property) {
+        Object.entries(property).forEach(([key, value]) => {
+          body.forEach((doc: object) => {
+            expect(doc).toHaveProperty(key, value);
+          });
+        });
+      }
+
+      if (notProperty) {
+        body.forEach((doc: object) => {
+          notProperty.forEach(key => {
+            expect(doc).not.toHaveProperty(key);
+          });
+        });
+      }
+
+      if (headers) {
+        Object.entries(headers).forEach(([key, value]) => {
+          expect(header[key]).toEqual(value);
+        });
+      }
     }
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({p: 0, pageSize: 5, totalCount: true})
-      .then(({body, header}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(5);
-        expect(header['x-total-count']).toEqual('10');
-      });
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({p: 1, pageSize: 5, totalCount: true})
-      .then(({body, header}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(5);
-        expect(header['x-total-count']).toEqual('10');
-      });
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({pageSize: 5, totalCount: true})
-      .then(({body, header}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(5);
-        expect(header['x-total-count']).toEqual('10');
-      });
-    await request
-      .get('/persons')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .query({p: 0, totalCount: true})
-      .then(({body, header}) => {
-        expect(Array.isArray(body)).toEqual(true);
-        expect(body.length).toEqual(10);
-        expect(header['x-total-count']).toEqual('10');
-      });
-  });
+  );
 });

@@ -1,24 +1,30 @@
-import {FastifyReply, FastifyRequest, HTTPMethods} from 'fastify';
+import {FastifyReply, FastifyRequest} from 'fastify';
 import {Model} from 'mongoose';
-import {FastifyMongooseRestOptions} from '..';
+import {FastifyMongooseRestOptions} from '../types';
 
-export default function Delete(
-  name: string,
-  model: Model<any>,
-  options?: FastifyMongooseRestOptions
+export function Delete<T>(
+  basePath: string,
+  model: Model<T>,
+  options: FastifyMongooseRestOptions
 ): {
-  method: HTTPMethods;
+  method: 'DELETE';
   url: string;
   schema: {
     summary: string;
-    tags: string[];
+    tags?: string[];
     params: object;
     response: object;
   };
-  handler: any;
+  handler: (
+    request: FastifyRequest<{
+      Params: {
+        id: string;
+      };
+    }>,
+    reply: FastifyReply
+  ) => Promise<any>;
 } {
-  let response: Record<number, any> = {};
-  response = {
+  const response = {
     200: {
       description: 'Success',
       type: 'object',
@@ -45,40 +51,32 @@ export default function Delete(
     },
   };
 
+  const {tags, findProperty} = options;
   return {
     method: 'DELETE',
-    url: `/${name}/:id`,
+    url: `${basePath}/:id`,
     schema: {
-      summary: `Delete ${name}`,
-      tags: options?.tags || [],
+      summary: `Delete a ${model.modelName} resource`,
+      tags,
       params: {
         type: 'object',
         properties: {
           id: {
             type: 'string',
-            description: `Unique identifier of ${name}`,
+            description: `Unique identifier of ${model.modelName}`,
           },
         },
       },
       response,
     },
-    handler: async (
-      request: FastifyRequest<{
-        Params: {
-          id: string;
-        };
-      }>,
-      reply: FastifyReply
-    ) => {
-      const findQuery: {[name: string]: string} = {};
-      findQuery[options?.findProperty || '_id'] = request.params.id;
-
-      const res = await model.findOne(findQuery);
-      if (!res) {
+    handler: async (request, reply) => {
+      const result = await model.deleteOne({
+        [findProperty || '_id']: request.params.id,
+      } as any);
+      if (result.deletedCount < 1) {
         return reply.status(404).send(new Error('Resource not found'));
       }
-      const resource = await model.deleteOne(findQuery);
-      return reply.send(resource);
+      return reply.send(result);
     },
   };
 }

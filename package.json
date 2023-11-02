@@ -5,15 +5,15 @@
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "prepare": "npm run compile",
     "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc",
     "fix": "gts fix",
-    "pretest": "npm run compile",
-    "posttest": "npm run lint",
-    "test": "jest --coverage"
+    "test": "jest --coverage --verbose --silent",
+    "precompile": "npm run clean",
+    "pretest": "npm run lint",
+    "prepublishOnly": "npm run test",
+    "prepare": "npm run compile"
   },
   "repository": {
     "type": "git",
@@ -30,18 +30,21 @@
   ],
   "author": "Tommi Hagelberg",
   "license": "MIT",
+  "dependencies": {
+    "mongoose": "^7.5.0"
+  },
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",
-    "@types/jest": "^29.5.2",
-    "@types/node": "^20.3.2",
+    "@shelf/jest-mongodb": "^4.1.7",
+    "@types/jest": "^29.5.4",
+    "@types/node": "^20.6.0",
     "@types/supertest": "^2.0.12",
-    "fastify": "^4.18.0",
-    "gts": "^3.1.1",
-    "jest": "^29.5.0",
-    "mongodb-memory-server": "^8.13.0",
-    "mongoose": "^7.3.1",
+    "fastify": "^4.22.2",
+    "gts": "^5.0.1",
+    "jest": "^29.6.4",
+    "mongodb-memory-server": "^8.15.1",
     "supertest": "^6.3.3",
-    "ts-jest": "^29.1.0",
-    "typescript": "^5.1.5"
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
   }
 }

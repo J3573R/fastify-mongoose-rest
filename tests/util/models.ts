@@ -1,18 +1,25 @@
-import Mongoose from 'mongoose';
+import {Types, Schema, model} from 'mongoose';
 
-interface Person {
+export interface Person {
   name: string;
   motto: string;
   address: {
     street: string;
     city: string;
   };
-  cats: Array<Cat>;
+  cats?: Array<Cat>;
 }
 
-interface Cat {
+export interface Cat {
   name: string;
   age: number;
+  owner: Person | Types.ObjectId;
+}
+
+export interface Dog {
+  name: string;
+  age: number;
+  owner: Person | Types.ObjectId;
 }
 
 export interface User {
@@ -20,34 +27,58 @@ export interface User {
   userId: string;
 }
 
-const personSchema = new Mongoose.Schema<Person>({
-  name: {type: String, required: true},
-  motto: {type: String},
-  address: {
-    street: {type: String},
-    city: {type: String},
-  },
-  cats: [
-    {
-      type: Mongoose.Schema.Types.ObjectId,
-      ref: 'Cat',
+const personSchema = new Schema<Person>(
+  {
+    name: {type: String, required: true},
+    motto: {type: String},
+    address: {
+      street: {type: String},
+      city: {type: String},
     },
-  ],
+  },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+    toObject: {
+      virtuals: true,
+    },
+  }
+);
+
+personSchema.virtual('cats', {
+  ref: 'Cat',
+  localField: '_id',
+  foreignField: 'owner',
 });
 
-const catSchema = new Mongoose.Schema<Cat>({
+personSchema.virtual('dogs', {
+  ref: 'Dog',
+  localField: '_id',
+  foreignField: 'owner',
+});
+
+const catSchema = new Schema<Cat>({
   name: {type: String, required: true},
   age: {type: Number, required: true},
+  owner: {type: Schema.Types.ObjectId, ref: 'Person'},
 });
 
-const userSchema = new Mongoose.Schema<User>({
+const dogSchema = new Schema<Dog>({
+  name: {type: String, required: true},
+  age: {type: Number, required: true},
+  owner: {type: Schema.Types.ObjectId, ref: 'Person'},
+});
+
+const userSchema = new Schema<User>({
   name: {type: String, required: true},
   userId: {type: String, required: true},
 });
 
-const PersonModel = Mongoose.model<Person>('Person', personSchema);
-const CatModel = Mongoose.model<Cat>('Cat', catSchema);
-const UserModel = Mongoose.model<User>('User', userSchema);
+const PersonModel = model<Person>('Person', personSchema);
+const CatModel = model<Cat>('Cat', catSchema);
+const DogModel = model<Dog>('Dog', dogSchema, 'dogs');
+const UserModel = model<User>('User', userSchema);
 
 const PersonValidationSchema = {
   _id: {type: 'string'},
@@ -60,13 +91,18 @@ const PersonValidationSchema = {
     },
   },
   name: {type: 'string'},
-  cats: {type: 'array', items: {}},
+  cats: {type: ['array', 'null'], items: {}},
+  dogs: {type: ['array', 'null'], items: {}},
 };
 
 const CatValidationSchema = {
   _id: {type: 'string'},
   name: {type: 'string'},
   age: {type: 'number'},
+  owner: {
+    type: ['string', 'object'],
+    properties: PersonValidationSchema,
+  },
 };
 
 const UserValidationSchema = {
@@ -78,6 +114,7 @@ const UserValidationSchema = {
 export {
   PersonModel,
   CatModel,
+  DogModel,
   UserModel,
   PersonValidationSchema,
   CatValidationSchema,

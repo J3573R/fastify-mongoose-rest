@@ -1,16 +1,12 @@
-import {SuperAgentTest} from 'supertest';
 import {faker} from '@faker-js/faker';
 import TestSetup from './util/setup';
+import supertest from 'supertest';
 
 describe('Create', () => {
-  const testSetup = new TestSetup();
-  let request: SuperAgentTest;
+  let request: supertest.SuperTest<supertest.Test>;
 
-  beforeEach(async () => {
-    request = await testSetup.init();
-  });
-  afterEach(async () => {
-    await testSetup.reset();
+  beforeAll(async () => {
+    request = await TestSetup();
   });
 
   it('should create new document', async () => {
@@ -23,5 +19,17 @@ describe('Create', () => {
       .then(res => {
         expect(res.body.name).toEqual(name);
       });
+  });
+
+  it('should create a new document', async () => {
+    const name = faker.person.fullName();
+    const userId = faker.string.uuid();
+
+    const {body} = await request
+      .post('/users2')
+      .expect(200)
+      .send({name, userId});
+
+    expect(body).toEqual(expect.objectContaining({name, userId}));
   });
 });

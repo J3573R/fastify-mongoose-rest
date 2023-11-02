@@ -1,37 +1,27 @@
-import {SuperAgentTest} from 'supertest';
-import {faker} from '@faker-js/faker';
 import TestSetup from './util/setup';
+import {mockPerson} from './util/mock-data';
+import {Person} from './util/models';
+import supertest from 'supertest';
 
 describe('Insert many', () => {
-  const testSetup = new TestSetup();
-  let request: SuperAgentTest;
+  let request: supertest.SuperTest<supertest.Test>;
 
-  beforeEach(async () => {
-    request = await testSetup.init();
-  });
-  afterEach(async () => {
-    await testSetup.reset();
+  beforeAll(async () => {
+    request = await TestSetup();
   });
 
   it('Should create new documents', async () => {
-    const names = [
-      {name: faker.person.fullName()},
-      {name: faker.person.fullName()},
-      {name: faker.person.fullName()},
-      {name: faker.person.fullName()},
-      {name: faker.person.fullName()},
-      {name: faker.person.fullName()},
-    ];
+    const people = [...Array(10)].map(mockPerson);
 
-    await request
+    const {body} = await request
       .post('/persons/insert-many')
       .expect(200)
-      .send(names)
-      .then(res => {
-        expect(res.body.length).toEqual(names.length);
-        for (let i = 0; i < res.body.length; i++) {
-          expect(res.body[i].name).toBe(names[i].name);
-        }
-      });
+      .send(people);
+
+    expect(body.length).toEqual(people.length);
+
+    expect(
+      people.every(p1 => body.some((p2: Person) => p2.name === p1.name))
+    ).toBe(true);
   });
 });
