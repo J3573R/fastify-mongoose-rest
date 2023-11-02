@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/J3573R/fastify-mongoose-rest/compare/v4.2.2...v5.0.0) (2023-11-02)
+
+
+### Features
+
+* added support for custom find property ([f2e75ec](https://github.com/J3573R/fastify-mongoose-rest/commit/f2e75ec7de1c7b68a039739ea5ae73510712bef7))
+* better define options for creation ([a3b065c](https://github.com/J3573R/fastify-mongoose-rest/commit/a3b065ca1f8de00ade2e3b55f1404bb7cb82757b))
+* improve typing ([ee37692](https://github.com/J3573R/fastify-mongoose-rest/commit/ee376929293a16cfc4a7cc5916803122e487a327))
+* move types to their own file ([2c2a8cb](https://github.com/J3573R/fastify-mongoose-rest/commit/2c2a8cbd773b2db1b03b107c84acd4a271673df7))
+* option for population object array ([0c68519](https://github.com/J3573R/fastify-mongoose-rest/commit/0c685191ab9412888c7f5304e3d54c08293bd480))
+* options default value ([2ee3470](https://github.com/J3573R/fastify-mongoose-rest/commit/2ee3470eaa0c6cb470392213ac3dd60932d9c4e4))
+* page alias to list operation ([bd4947a](https://github.com/J3573R/fastify-mongoose-rest/commit/bd4947ac9c456ba7cee8d5129006dd55aac64a96))
+
 ## 4.3.0 (2023-04-27)
 
 ### Features
