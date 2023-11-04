@@ -31,7 +31,7 @@
   "author": "Tommi Hagelberg",
   "license": "MIT",
   "dependencies": {
-    "mongoose": "^7.5.0"
+    "mongoose": "^7.6.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",
