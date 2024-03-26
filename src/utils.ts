@@ -163,7 +163,7 @@ export async function findOperation<T>(model: Model<T>, options: FindOptions) {
     }
   }
 
-  const resources = await operation;
+  const resources = await operation.lean().exec();
 
   if (totalCount === true) {
     const operationCount = await model
