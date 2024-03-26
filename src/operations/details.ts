@@ -91,7 +91,7 @@ export function Details<T>(
         query.select(parseInput(select));
       }
 
-      const resource = await query.exec();
+      const resource = await query.lean().exec();
 
       if (!resource) {
         return reply.status(404).send(new Error('Resource not found'));
