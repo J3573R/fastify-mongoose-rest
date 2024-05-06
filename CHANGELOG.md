@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.1.1](https://github.com/J3573R/fastify-mongoose-rest/compare/v5.1.0...v5.1.1) (2024-05-06)
+
+
+### Bug Fixes
+
+* x-total-count missing when count is zero ([ea3dc48](https://github.com/J3573R/fastify-mongoose-rest/commit/ea3dc4826aad9d7e601ce981035d0b2fd5862b61))
+
 ## [5.1.0](https://github.com/J3573R/fastify-mongoose-rest/compare/v4.2.2...v5.1.0) (2024-03-26)
 
 
