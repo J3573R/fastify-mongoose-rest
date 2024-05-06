@@ -94,7 +94,7 @@ export function List<T>(
     handler: async (request, reply) => {
       const {resources, totalCount} = await findOperation(model, request.query);
 
-      if (totalCount) {
+      if (totalCount !== undefined) {
         reply.header('X-Total-Count', totalCount);
       }
 

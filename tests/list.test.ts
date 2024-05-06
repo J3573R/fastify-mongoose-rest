@@ -60,11 +60,11 @@ describe('list', () => {
       /**
        * Expected first document name
        */
-      first: string;
+      first?: string;
       /**
        * Expected last document name
        */
-      last: string;
+      last?: string;
       /**
        * Expected properties in returned documents
        */
@@ -240,6 +240,16 @@ describe('list', () => {
       },
     ],
     [
+      'should return header X-Total-Count with total count of documents with query that does not match any documents',
+      {query: JSON.stringify({name: 'z'}), totalCount: true},
+      {
+        length: 0,
+        headers: {
+          'x-total-count': '0',
+        },
+      },
+    ],
+    [
       'should not return header X-Total-Count if totalCount parameter is not present',
       {},
       {
@@ -387,8 +397,11 @@ describe('list', () => {
 
       expect(Array.isArray(body)).toEqual(true);
       expect(body.length).toEqual(length);
-      expect(body.at(0).name).toEqual(first);
-      expect(body.at(-1).name).toEqual(last);
+
+      if (length > 0) {
+        expect(body.at(0).name).toEqual(first);
+        expect(body.at(-1).name).toEqual(last);
+      }
 
       if (property) {
         Object.entries(property).forEach(([key, value]) => {
