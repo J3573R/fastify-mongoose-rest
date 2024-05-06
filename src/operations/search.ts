@@ -103,7 +103,7 @@ export function Search<T>(
     handler: async (request, reply) => {
       const {resources, totalCount} = await findOperation(model, request.body);
 
-      if (totalCount) {
+      if (totalCount !== undefined) {
         reply.header('X-Total-Count', totalCount);
       }
 
